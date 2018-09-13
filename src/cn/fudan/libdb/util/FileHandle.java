@@ -17,6 +17,9 @@ import java.security.NoSuchAlgorithmException;
 public class FileHandle {
     public static final String JAR_SUFFIX = ".jar";
     public static final String DEX_SUFFIX = ".dex";
+    public static final String AAR_SUFFIX = ".aar";
+    public static final String APKLIB_SUFFIX = ".apklib";
+
 
     byte[] content;
     File tmpFile;
@@ -30,7 +33,7 @@ public class FileHandle {
 
     public String getContentHashSHA256(){
         try{
-            MessageDigest sha256 = MessageDigest.getInstance("SHA256");
+            MessageDigest sha256 = MessageDigest.getInstance("SHA-256");
             sha256.update(content);
             byte[] b = sha256.digest();
             String dexsha256 = "";
@@ -43,6 +46,8 @@ public class FileHandle {
         }
         return null;
     }
+
+
 
     public String getContentHashMD5(){
         try{

@@ -1,6 +1,7 @@
 package cn.fudan.libdb.client;
 
 import com.beust.jcommander.Parameter;
+import com.sun.istack.internal.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -43,6 +44,13 @@ public class LibDBArgs {
     @Parameter(names = {"--key","-k"}, description = "Hash key of lib package")
     private String hashKey;
 
+    @Parameter(names = {"--hashList", "-hl"}, description = "Sync get file for each line of hash value in the file")
+    private String hashListFilePath;
+
+    // TODO: 2018/9/13 support source-code
+    @Parameter(names = {"--hashListType", "-hlt"}, description = "File type of hash list(dex or jar)")
+    private String hashListType;
+
 
     public int getLimit() {
         return limit;
@@ -66,6 +74,14 @@ public class LibDBArgs {
 
     public String getOutputFilePath() {
         return outputFilePath;
+    }
+
+    public String getHashListFilePath(){
+        return hashListFilePath;
+    }
+
+    public String getHashListType(){
+        return hashListType;
     }
 
     public boolean isJsonOutput(){
@@ -104,4 +120,11 @@ public class LibDBArgs {
         return hashKey == null;
     }
 
+    public boolean hashListFilePathUnset(){
+        return hashListFilePath == null;
+    }
+
+    public boolean hashListTypeUnset(){
+        return hashListType == null;
+    }
 }

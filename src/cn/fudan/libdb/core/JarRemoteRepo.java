@@ -8,6 +8,8 @@ import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
+import static cn.fudan.libdb.LibDBConfig.PROP_KEY_AAR_ROOT_DIR;
+import static cn.fudan.libdb.LibDBConfig.PROP_KEY_APKLIB_ROOT_DIR;
 import static cn.fudan.libdb.LibDBConfig.PROP_KEY_JAR_ROOT_DIR;
 
 /**
@@ -16,6 +18,9 @@ import static cn.fudan.libdb.LibDBConfig.PROP_KEY_JAR_ROOT_DIR;
  */
 public class JarRemoteRepo extends RemoteRepo{
     public static final String JAR_ROOT_DIR = LibDBConfig.getConfig(PROP_KEY_JAR_ROOT_DIR);
+    public static final String AAR_ROOT_DIR = LibDBConfig.getConfig(PROP_KEY_AAR_ROOT_DIR);
+    public static final String APKLIB_ROOT_DIR = LibDBConfig.getConfig(PROP_KEY_APKLIB_ROOT_DIR);
+
     private static JarRemoteRepo singleInstance;
     public synchronized static JarRemoteRepo getInstance(){
         if(singleInstance == null){
@@ -48,13 +53,20 @@ public class JarRemoteRepo extends RemoteRepo{
     }
 
     private File getFileFromRepo(String key) {
-        File jarFile = new File(JAR_ROOT_DIR, key);
-        if (jarFile.exists())
+        File jarFile = new File(JAR_ROOT_DIR, key + ".jar");
+        if (jarFile.exists()) {
             return jarFile;
+        }
 
-        jarFile = new File(JAR_ROOT_DIR, key+".jar");
-        if (jarFile.exists())
+        jarFile = new File(AAR_ROOT_DIR, key + ".aar");
+        if(jarFile.exists()){
             return jarFile;
+        }
+
+        jarFile = new File(APKLIB_ROOT_DIR, key + ".apklib");
+        if(jarFile.exists()){
+            return jarFile;
+        }
 
         return null;
     }
