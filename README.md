@@ -3,16 +3,16 @@ RPC. Third-party Libraries query & fetch
 Dai Jiarun.
 Fudan University. Whitzard Team
 
-##Quick Start
+### Quick Start
 all settings in `libdb.properties`
 
-###Server
+### Server
 To start the server:
 ```
 java -cp LibDB.jar cn.fudan.libdb.server.LibDBServiceServer
 ```
 
-###Query(-q)
+### Query(-q)
 Query Third-party libraries by groupName, artifactId, version(at least one of these three labels is specified):
 groupName: -g
 artifactID: -a
@@ -31,7 +31,7 @@ Output query res to file: -o
 java -jar .\LibDB.jar  -q -j -g com.github.castorflex.smoothprogressbar -o ./queryres.txt
 ```
 
-###Fetch(-f)
+### Fetch(-f)
 Fetch Third-party libraries by hash of .dex or .jar(treat .aar / .apklib as .jar temporarily)
 hash key: -k
 ```
@@ -56,8 +56,8 @@ An example of hashlist.txt, a hash key one per line.
 a8627c801e0d16169ef9ca83cf89861a
 ```
 
-###Other
-more information:
+### Other
+For more information:
 ```
 java -jar .\LibDB.jar  -h
 ```
