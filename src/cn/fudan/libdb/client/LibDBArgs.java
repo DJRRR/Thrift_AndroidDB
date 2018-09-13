@@ -25,7 +25,7 @@ public class LibDBArgs {
     @Parameter(names = {"--version","-v"}, description = "Version Number of Lib Package")
     private String version;
 
-    @Parameter(names = {"--output","-o"}, description = "Output File")
+    @Parameter(names = {"--output","-o"}, description = "Output File(Dir)")
     private String outputFilePath;
 
     @Parameter(names = {"--json", "-j"}, description = "Json")
@@ -35,10 +35,14 @@ public class LibDBArgs {
     private boolean help = false;
 
     @Parameter(names = {"--query","-q"}, description = "Search in the libdb")
-    private boolean query = true;
+    private boolean query = false;
 
     @Parameter(names = {"--fetch", "-f"}, description = "Download lib(jar/dex)")
     private boolean fetch = false;
+
+    @Parameter(names = {"--key","-k"}, description = "Hash key of lib package")
+    private String hashKey;
+
 
     public int getLimit() {
         return limit;
@@ -46,6 +50,10 @@ public class LibDBArgs {
 
     public String getGroupName() {
         return groupName;
+    }
+
+    public String getHashKey() {
+        return hashKey;
     }
 
     public String getArtifactId() {
@@ -90,6 +98,10 @@ public class LibDBArgs {
 
     public boolean outputPathUnset(){
         return outputFilePath == null;
+    }
+
+    public boolean hashKeyUnset(){
+        return hashKey == null;
     }
 
 }

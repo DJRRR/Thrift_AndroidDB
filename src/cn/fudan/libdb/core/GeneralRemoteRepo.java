@@ -45,7 +45,7 @@ public class GeneralRemoteRepo extends RemoteRepo{
 
     @Override
     public ByteBuffer fetch(String key){
-        return null;
+        throw new RuntimeException("not support");
     }
 
 

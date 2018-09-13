@@ -1,16 +1,21 @@
 package cn.fudan.libdb.core;
 
+import cn.fudan.libdb.LibDBConfig;
 import cn.fudan.libdb.dao.model.DownloadedLibPackage;
 
+import java.io.File;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
+
+import static cn.fudan.libdb.LibDBConfig.PROP_KEY_JAR_ROOT_DIR;
 
 /**
  * @author Dai Jiarun
  * @date 2018/7/5
  */
 public class JarRemoteRepo extends RemoteRepo{
+    public static final String JAR_ROOT_DIR = LibDBConfig.getConfig(PROP_KEY_JAR_ROOT_DIR);
     private static JarRemoteRepo singleInstance;
     public synchronized static JarRemoteRepo getInstance(){
         if(singleInstance == null){
@@ -42,9 +47,27 @@ public class JarRemoteRepo extends RemoteRepo{
         return DownloadedLibPackage.DBHelper.queryResToJarJson(partList);
     }
 
+    private File getFileFromRepo(String key) {
+        File jarFile = new File(JAR_ROOT_DIR, key);
+        if (jarFile.exists())
+            return jarFile;
+
+        jarFile = new File(JAR_ROOT_DIR, key+".jar");
+        if (jarFile.exists())
+            return jarFile;
+
+        return null;
+    }
+
     @Override
     public ByteBuffer fetch(String key){
-        return null;
+        File jarFile = getFileFromRepo(key);
+        if(jarFile == null){
+            return null;
+        }
+        else{
+            return readFileToBuffer(jarFile);
+        }
     }
 
 

@@ -4,6 +4,7 @@ import cn.fudan.libdb.LibDBConfig;
 import cn.fudan.libdb.core.RemoteRepo;
 import cn.fudan.libdb.core.RemoteRepoFactory;
 import cn.fudan.libdb.thrift.LibDBService;
+import cn.fudan.libdb.util.FileHandle;
 import cn.fudan.libdb.util.FileUtils;
 import com.beust.jcommander.JCommander;
 import org.apache.thrift.TException;
@@ -13,6 +14,9 @@ import org.apache.thrift.transport.TSocket;
 import org.apache.thrift.transport.TTransport;
 import org.apache.thrift.transport.TTransportException;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -106,6 +110,21 @@ public class LibDBServiceClient implements LibDBService.Iface{
         return result;
     }
 
+    @Override
+    public java.nio.ByteBuffer fetch(java.lang.String hash) throws org.apache.thrift.TException{
+        LibDBService.Client client = getAvailableClient();
+        ByteBuffer result = client.fetch(hash);
+        synchronized (clientPool) {
+            clientPool.add(client);
+        }
+        return result;
+    }
+
+    public static FileHandle getFileHandle(String hash) throws org.apache.thrift.TException{
+        ByteBuffer result = LibDBServiceClient.defaultClient().fetch(hash);
+        return new FileHandle(result.array());
+    }
+
 
 
     public static void main(String ... argv) throws TException{
@@ -120,6 +139,10 @@ public class LibDBServiceClient implements LibDBService.Iface{
         }
         LibDBServiceClient client = LibDBServiceClient.defaultClient();
         client.ping(1);
+        if(libDBArgs.isQuery() && libDBArgs.isFetch()){
+            System.out.println("Please specify the operation type(-q or -f)");
+            return;
+        }
         if(libDBArgs.isQuery()){
             if(libDBArgs.groupUnset() && libDBArgs.artifactUnset() && libDBArgs.versionUnset()){
                 System.out.println("Please set -g or -a or -v for a query!");
@@ -137,9 +160,66 @@ public class LibDBServiceClient implements LibDBService.Iface{
             }
         }
         else if(libDBArgs.isFetch()){
+            if(libDBArgs.hashKeyUnset()){
+                System.out.println("Please set the hash key of lib package(md5 for jar and sha256 for dex)");
+                return;
+            }
+            String hashKey = libDBArgs.getHashKey();
+            FileHandle fileHandle = getFileHandle(hashKey);
+            if(fileHandle == null){
+                System.err.println("Fetch failed");
+                return;
+            }
+            String dirPath = null;
+            if(libDBArgs.outputPathUnset()){
+                //write to current folder
+                dirPath = "./";
+            }
+            else{
+                //write to specified folder
+                dirPath = libDBArgs.getOutputFilePath();
+                File checkDir = new File(dirPath);
+                if((checkDir.exists() && !checkDir.isDirectory()) || (!checkDir.exists())){
+                    try {
+                        checkDir.createNewFile();
+                    }catch (IOException e){
+                        e.printStackTrace();
+                        System.err.println("Fail to create dir " + dirPath);
+                        return;
+                    }
+                }
+                if(!dirPath.endsWith("/")){
+                    dirPath += "/";
+                }
+            }
+
+            if(hashKey.length() == 32){
+                String filepath = dirPath + hashKey + ".jar";
+                try {
+                    fileHandle.writeFile(filepath);
+                    System.out.println("write jar to " + filepath);
+                }catch (IOException e){
+                    e.printStackTrace();
+                    System.out.println("write jar to local failed");
+                }
+            }
+            else if(hashKey.length() == 64){
+                String filepath = dirPath + hashKey + ".dex";
+                try{
+                    fileHandle.writeFile(filepath);
+                    System.out.println("write dex to " + filepath);
+                }catch (IOException e){
+                    e.printStackTrace();
+                    System.out.println("write dex to local failed");
+                }
+            }
+            else{
+                System.err.println("Error length or hash key(only support md5 and sha256)");
+            }
+
         }
         else{
-            System.err.println("No specified operation, please set -q or -d");
+            System.err.println("No specified operation, please set -q or -f");
         }
 
 

@@ -17,5 +17,9 @@ service LibDBService{
    */
    string queryLibsByGAV(1:string groupName 2:string artifactId 3:string version 4:string repoType 5:bool jsonOutput 6:int limit)
 
+   /*
+   * download a lib package from server(dex or jar)
+   */
+   binary fetch(1:string hash)
 
 }

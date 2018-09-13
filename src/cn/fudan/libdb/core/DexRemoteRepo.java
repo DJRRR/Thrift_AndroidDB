@@ -1,17 +1,25 @@
 package cn.fudan.libdb.core;
 
+import cn.fudan.libdb.LibDBConfig;
 import cn.fudan.libdb.dao.model.DownloadedLibPackage;
 
+import java.io.File;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
+
+import static cn.fudan.libdb.LibDBConfig.PROP_KEY_DEX_ROOT_DIR;
+import static cn.fudan.libdb.LibDBConfig.PROP_KEY_JAR_ROOT_DIR;
 
 /**
  * @author Dai Jiarun
  * @date 2018/7/5
  */
 public class DexRemoteRepo extends RemoteRepo {
+    public static final String DEX_ROOT_DIR = LibDBConfig.getConfig(PROP_KEY_DEX_ROOT_DIR);
     private static DexRemoteRepo singleInstance;
+
+
     public synchronized static DexRemoteRepo getInstance(){
         if(singleInstance == null){
             singleInstance = new DexRemoteRepo();
@@ -42,9 +50,27 @@ public class DexRemoteRepo extends RemoteRepo {
         return DownloadedLibPackage.DBHelper.queryResToDexJson(partList);
     }
 
+    private File getFileFromRepo(String key) {
+        File dexFile = new File(DEX_ROOT_DIR, key);
+        if (dexFile.exists())
+            return dexFile;
+
+        dexFile = new File(DEX_ROOT_DIR, key+".dex");
+        if (dexFile.exists())
+            return dexFile;
+
+        return null;
+    }
+
     @Override
     public ByteBuffer fetch(String key){
-        return null;
+        File dexFile = getFileFromRepo(key);
+        if(dexFile == null){
+            return null;
+        }
+        else{
+            return readFileToBuffer(dexFile);
+        }
     }
 
 
