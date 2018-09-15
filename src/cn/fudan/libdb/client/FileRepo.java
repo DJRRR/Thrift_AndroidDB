@@ -84,7 +84,7 @@ public abstract class FileRepo {
                     System.err.println(e);
                 }
             }
-            byte[] result = fetcherThreadPool.getAndRemoveResultIfPresent(fileHash);
+            FileHandle result = fetcherThreadPool.getAndRemoveResultIfPresent(fileHash);
 
             String newFileHash = fileToCache.poll();
             if (newFileHash != null)
@@ -93,7 +93,7 @@ public abstract class FileRepo {
             if (result == null)
                 return null;
             else
-                return new FileHandle(result);
+                return result;
         }
         else {
             if (fileToCache.contains(fileHash))
@@ -108,5 +108,7 @@ public abstract class FileRepo {
             processor.process(fileHandle);
         }).start();
     }
+
+
 }
 

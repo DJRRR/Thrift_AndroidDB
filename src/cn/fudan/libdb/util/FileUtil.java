@@ -9,7 +9,7 @@ import java.io.IOException;
  * @author Dai Jiarun
  * @date 2018/7/10
  */
-public class FileUtils {
+public class FileUtil {
     public static boolean saveStrToFile(String content, String filepath){
         File file = new File(filepath);
         if (!file.exists()) {

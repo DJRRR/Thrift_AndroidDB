@@ -1,15 +1,11 @@
 package cn.fudan.libdb.thrift;
 
-import cn.fudan.libdb.core.GeneralRemoteRepo;
-import cn.fudan.libdb.core.RemoteRepo;
-import cn.fudan.libdb.core.RemoteRepoFactory;
+import cn.fudan.libdb.remote.RemoteRepo;
+import cn.fudan.libdb.remote.RemoteRepoFactory;
 
-import java.rmi.Remote;
-import java.util.ArrayList;
-import java.util.List;
+import static cn.fudan.libdb.util.Constants.DEX_REPO;
+import static cn.fudan.libdb.util.Constants.JAR_REPO;
 
-import static cn.fudan.libdb.core.RemoteRepoFactory.DEX_REPO;
-import static cn.fudan.libdb.core.RemoteRepoFactory.JAR_REPO;
 
 /**
  * @author Dai Jiarun
@@ -30,7 +26,7 @@ public class LibDBServiceImpl implements LibDBService.Iface {
 
     //TODO: to support source-code fetcher
     @Override
-    public java.nio.ByteBuffer fetch(java.lang.String hash) throws org.apache.thrift.TException{
+    public FileInfo fetch(java.lang.String hash) throws org.apache.thrift.TException{
         RemoteRepo remoteRepo;
         if(hash.length() == 32){//md5 jar()
             remoteRepo = RemoteRepoFactory.getRepo(JAR_REPO);

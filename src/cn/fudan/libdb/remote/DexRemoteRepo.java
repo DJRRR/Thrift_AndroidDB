@@ -1,15 +1,14 @@
-package cn.fudan.libdb.core;
+package cn.fudan.libdb.remote;
 
 import cn.fudan.libdb.LibDBConfig;
 import cn.fudan.libdb.dao.model.DownloadedLibPackage;
+import cn.fudan.libdb.thrift.FileInfo;
 
 import java.io.File;
-import java.nio.ByteBuffer;
-import java.util.ArrayList;
 import java.util.List;
 
 import static cn.fudan.libdb.LibDBConfig.PROP_KEY_DEX_ROOT_DIR;
-import static cn.fudan.libdb.LibDBConfig.PROP_KEY_JAR_ROOT_DIR;
+import static cn.fudan.libdb.util.Constants.DEX_SUFFIX;
 
 /**
  * @author Dai Jiarun
@@ -50,26 +49,27 @@ public class DexRemoteRepo extends RemoteRepo {
         return DownloadedLibPackage.DBHelper.queryResToDexJson(partList);
     }
 
-    private File getFileFromRepo(String key) {
+    @Override
+    public FileInfo getFileInfoFromRepo(String key) {
         File dexFile = new File(DEX_ROOT_DIR, key);
         if (dexFile.exists())
-            return dexFile;
+            return new FileInfo(readFileToBuffer(dexFile), DEX_SUFFIX);
 
-        dexFile = new File(DEX_ROOT_DIR, key+".dex");
+        dexFile = new File(DEX_ROOT_DIR, key + DEX_SUFFIX);
         if (dexFile.exists())
-            return dexFile;
+            return new FileInfo(readFileToBuffer(dexFile), DEX_SUFFIX);
 
         return null;
     }
 
     @Override
-    public ByteBuffer fetch(String key){
-        File dexFile = getFileFromRepo(key);
-        if(dexFile == null){
+    public FileInfo fetch(String key){
+        FileInfo fileInfo = getFileInfoFromRepo(key);
+        if(fileInfo == null){
             return null;
         }
         else{
-            return readFileToBuffer(dexFile);
+            return fileInfo;
         }
     }
 

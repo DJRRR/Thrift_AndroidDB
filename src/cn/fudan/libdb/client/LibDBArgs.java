@@ -47,9 +47,8 @@ public class LibDBArgs {
     @Parameter(names = {"--hashList", "-hl"}, description = "Sync get file for each line of hash value in the file")
     private String hashListFilePath;
 
-    // TODO: 2018/9/13 support source-code
-    @Parameter(names = {"--hashListType", "-hlt"}, description = "File type of hash list(dex or jar)")
-    private String hashListType;
+    @Parameter(names = {"--repo", "-r"}, description = "Repo Type : lib, apk")
+    private String repoType;
 
 
     public int getLimit() {
@@ -80,8 +79,8 @@ public class LibDBArgs {
         return hashListFilePath;
     }
 
-    public String getHashListType(){
-        return hashListType;
+    public String getRepoType(){
+        return repoType;
     }
 
     public boolean isJsonOutput(){
@@ -124,7 +123,8 @@ public class LibDBArgs {
         return hashListFilePath == null;
     }
 
-    public boolean hashListTypeUnset(){
-        return hashListType == null;
+    public boolean repoTypeUnset(){
+        return repoType == null;
     }
+
 }

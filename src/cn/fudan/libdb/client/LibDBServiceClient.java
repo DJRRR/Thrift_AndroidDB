@@ -1,11 +1,10 @@
 package cn.fudan.libdb.client;
 
 import cn.fudan.libdb.LibDBConfig;
-import cn.fudan.libdb.core.RemoteRepo;
-import cn.fudan.libdb.core.RemoteRepoFactory;
+import cn.fudan.libdb.thrift.FileInfo;
 import cn.fudan.libdb.thrift.LibDBService;
 import cn.fudan.libdb.util.FileHandle;
-import cn.fudan.libdb.util.FileUtils;
+import cn.fudan.libdb.util.FileUtil;
 import com.beust.jcommander.JCommander;
 import org.apache.thrift.TApplicationException;
 import org.apache.thrift.TException;
@@ -17,7 +16,6 @@ import org.apache.thrift.transport.TTransportException;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.ByteBuffer;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -112,9 +110,9 @@ public class LibDBServiceClient implements LibDBService.Iface{
     }
 
     @Override
-    public java.nio.ByteBuffer fetch(java.lang.String hash) throws org.apache.thrift.TException{
+    public FileInfo fetch(java.lang.String hash) throws org.apache.thrift.TException{
         LibDBService.Client client = getAvailableClient();
-        ByteBuffer result = null;
+        FileInfo result = null;
         try {
             result = client.fetch(hash);
         }catch (TApplicationException e){
@@ -127,25 +125,29 @@ public class LibDBServiceClient implements LibDBService.Iface{
     }
 
     public static FileHandle getFileHandle(String hash, LibDBServiceClient client) throws org.apache.thrift.TException{
-        ByteBuffer result = client.fetch(hash);
-        return new FileHandle(result.array());
+        //ByteBuffer result = client.fetch(hash);
+        FileInfo result = client.fetch(hash);
+        return new FileHandle(result.content.array(), result.suffix);
     }
 
     public static void queryHandler(LibDBArgs libDBArgs, LibDBServiceClient client) throws TException{
+        if(!repoTypeCheck(libDBArgs)){
+            return;
+        }
         if(libDBArgs.groupUnset() && libDBArgs.artifactUnset() && libDBArgs.versionUnset()){
             System.out.println("Please set -g or -a or -v for a query!");
             System.err.println("-h for more information");
             return;
         }
         String outputRes = client.queryLibsByGAV(libDBArgs.getGroupName(), libDBArgs.getArtifactId(), libDBArgs.getVersion(),
-                "GENERAL_REPO", libDBArgs.isJsonOutput(), libDBArgs.getLimit());
+                "LIB_REPO", libDBArgs.isJsonOutput(), libDBArgs.getLimit());
         if(libDBArgs.outputPathUnset()){
             //command line print
             System.out.println(outputRes);
         }
         else{
             //save to file
-            FileUtils.saveStrToFile(outputRes + "\n", libDBArgs.getOutputFilePath());
+            FileUtil.saveStrToFile(outputRes + "\n", libDBArgs.getOutputFilePath());
         }
     }
 
@@ -175,8 +177,28 @@ public class LibDBServiceClient implements LibDBService.Iface{
         return dirPath;
     }
 
+    public static boolean repoTypeCheck(LibDBArgs libDBArgs){
+        if(libDBArgs.repoTypeUnset()){
+            System.err.println("Set type for file fetching(-r lib or apk)");
+            return false;
+        }
+        String repoType = libDBArgs.getRepoType();
+        if(!repoType.equals("lib") && !repoType.equals("apk")){
+            System.err.println("Error repo type, only support lib and apk");
+            return false;
+        }
+        // TODO: 2018/9/15 to merge apk repo and lib repo
+        if(repoType.equals("apk")){
+            throw new RuntimeException("Apk Repo unsupported yet");
+        }
+        return true;
+    }
+
 
     public static void singleFetchHandler(LibDBArgs libDBArgs, LibDBServiceClient client) throws TException{
+        if(!repoTypeCheck(libDBArgs)){
+            return;
+        }
         String hashKey = libDBArgs.getHashKey();
         FileHandle fileHandle = getFileHandle(hashKey, client);
         if(fileHandle == null){
@@ -188,24 +210,14 @@ public class LibDBServiceClient implements LibDBService.Iface{
             System.err.println("locate output dir failed");
             return;
         }
-        if(hashKey.length() == 32){
-            String filepath = dirPath + hashKey + ".jar";
+        if(hashKey.length() == 32 || hashKey.length() == 64){
+            String filepath = dirPath + hashKey + fileHandle.getSuffix();
             try {
                 fileHandle.writeFile(filepath);
-                System.out.println("write jar to " + filepath);
+                System.out.println("write " + fileHandle.getSuffix() + " to " + filepath);
             }catch (IOException e){
                 e.printStackTrace();
-                System.err.println("write jar to local failed");
-            }
-        }
-        else if(hashKey.length() == 64){
-            String filepath = dirPath + hashKey + ".dex";
-            try{
-                fileHandle.writeFile(filepath);
-                System.out.println("write dex to " + filepath);
-            }catch (IOException e){
-                e.printStackTrace();
-                System.err.println("write dex to local failed");
+                System.err.println("write " + fileHandle.getSuffix() + " to local failed");
             }
         }
         else{
@@ -214,13 +226,7 @@ public class LibDBServiceClient implements LibDBService.Iface{
     }
 
     public static void multiFetchHandler(LibDBArgs libDBArgs, LibDBServiceClient client)throws TException{
-        if(libDBArgs.hashListTypeUnset()){
-            System.err.println("Set Type for hash list file(-hlt dex or jar)");
-            return;
-        }
-        String hashListType = libDBArgs.getHashListType();
-        if(!hashListType.equals("jar") && !hashListType.equals("dex")){
-            System.err.println("For hashListType,Only support jar and dex");
+        if(!repoTypeCheck(libDBArgs)){
             return;
         }
         String dirPath = getDirFromArgs(libDBArgs);
@@ -230,16 +236,7 @@ public class LibDBServiceClient implements LibDBService.Iface{
         }
         String hashListFilePath = libDBArgs.getHashListFilePath();
         FileRepo fileRepo;
-        if(hashListType.equals("dex")) {
-            fileRepo = new DexRepo(hashListFilePath, 20);
-        }
-        else if(hashListType.equals("jar")){
-            fileRepo = new JarRepo(hashListFilePath, 20);
-        }
-        else{
-            System.err.println("For hashListType,Only support jar and dex");
-            return;
-        }
+        fileRepo = new LibRepo(hashListFilePath,20);
         THREAD_COUNT = Math.min(fileRepo.getFileHashListSize(), THREAD_COUNT);
         DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         List<String> hashList = fileRepo.getFileHashList();
@@ -253,29 +250,22 @@ public class LibDBServiceClient implements LibDBService.Iface{
                         synchronized (items) {
                             hashVal = items.poll();
                         }
+                        if(!(hashVal.length() == 32 || hashVal.length() == 64)){
+                            System.err.println(hashVal + " Error length or hash key(only support md5 and sha256)");
+                            continue;
+                        }
                         if (hashVal != null) {
                             FileHandle fileHandle = fileRepo.syncGetFile(hashVal);
                             if (fileHandle == null) {
-                                System.out.println( hashVal + " no such " + hashListType);
+                                System.out.println( hashVal + " no such file");
                                 continue;
                             }
-                            String actualHashVal = null;
-                            if(hashListType.equals("dex")) {
-                                actualHashVal = fileHandle.getContentHashSHA256();
-                            }
-                            // TODO: 2018/9/13 to distinguish aar /jar / apklib in client side 
-                            else if(hashListType.equals("jar")){
-                                actualHashVal = fileHandle.getContentHashMD5();
-                            }
-                            else{
-                                System.err.println("Unsupported hash list type");
-                                return;
-                            }
+                            String actualHashVal = fileHandle.getContentHash();
                             System.out.println(dateFormat.format(new Date())+"\t" + hashVal + "\t" + actualHashVal
                                                                                 +"\t" + hashVal.equals(actualHashVal));
                             if(hashVal.equals(actualHashVal)){
                                 try {
-                                    fileHandle.writeFile(dirPath + hashVal + "." + hashListType);
+                                    fileHandle.writeFile(dirPath + hashVal + fileHandle.getSuffix());
                                 }catch (IOException e){
                                     e.printStackTrace();
                                 }
@@ -364,7 +354,5 @@ public class LibDBServiceClient implements LibDBService.Iface{
             System.err.println("No specified operation, please set the operation type(-q or -f).");
             System.err.println("-h for more information");
         }
-
-
     }
 }

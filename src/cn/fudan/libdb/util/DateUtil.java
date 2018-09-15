@@ -1,4 +1,4 @@
-package cn.fudan.libdb.dao.util;
+package cn.fudan.libdb.util;
 
 import java.util.Date;
 

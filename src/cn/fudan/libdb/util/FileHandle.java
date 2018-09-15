@@ -2,24 +2,23 @@ package cn.fudan.libdb.util;
 
 import com.sun.xml.internal.bind.v2.TODO;
 import sun.plugin2.message.Message;
+import cn.fudan.libdb.util.Constants;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+
+import static cn.fudan.libdb.util.Constants.*;
 
 /**
  * @author Dai Jiarun
  * @date 2018/9/13
  */
 public class FileHandle {
-    public static final String JAR_SUFFIX = ".jar";
-    public static final String DEX_SUFFIX = ".dex";
-    public static final String AAR_SUFFIX = ".aar";
-    public static final String APKLIB_SUFFIX = ".apklib";
-
 
     byte[] content;
     File tmpFile;
@@ -29,7 +28,32 @@ public class FileHandle {
 
     public FileHandle(byte[] content) {this.content = content;}
 
+    public FileHandle(byte[] content, String suffix){
+        this.content = content;
+        this.fileSuffix = suffix;
+    }
+
     public byte[] getContent() {return content;}
+
+    public String getSuffix(){
+        return fileSuffix;
+    }
+
+    public ByteBuffer getContentBuffer(){
+        return null;
+    }
+
+    public String getContentHash(){
+        if(fileSuffix.equals(JAR_SUFFIX) || fileSuffix.equals(AAR_SUFFIX) || fileSuffix.equals(APKLIB_SUFFIX)){
+            return getContentHashMD5();
+        }
+        else if(fileSuffix.equals(DEX_SUFFIX)){
+            return getContentHashSHA256();
+        }
+        else{
+            throw new RuntimeException("Unsupported suffix : " + fileSuffix);
+        }
+    }
 
     public String getContentHashSHA256(){
         try{
@@ -66,43 +90,6 @@ public class FileHandle {
         return null;
     }
 
-    public File getJarFile() {
-        if (tmpFile != null)
-            return tmpFile;
-        else {
-            try {
-                tmpFile = File.createTempFile("jarrepo_", ".jar");
-                tmpFile.deleteOnExit();
-                FileOutputStream out = new FileOutputStream(tmpFile);
-                out.write(content);
-                out.flush();
-                out.close();
-                return tmpFile;
-            } catch (IOException e) {
-                e.printStackTrace();
-                return null;
-            }
-        }
-    }
-
-    public File getDexFile() {
-        if (tmpFile != null)
-            return tmpFile;
-        else {
-            try {
-                tmpFile = File.createTempFile("dexrepo_", ".dex");
-                tmpFile.deleteOnExit();
-                FileOutputStream out = new FileOutputStream(tmpFile);
-                out.write(content);
-                out.flush();
-                out.close();
-                return tmpFile;
-            } catch (IOException e) {
-                e.printStackTrace();
-                return null;
-            }
-        }
-    }
 
     public void deleteFile() {
         if (tmpFile != null) {

@@ -1,6 +1,7 @@
-package cn.fudan.libdb.core;
+package cn.fudan.libdb.remote;
 
 import cn.fudan.libdb.dao.model.DownloadedLibPackage;
+import cn.fudan.libdb.thrift.FileInfo;
 
 import java.io.*;
 import java.nio.ByteBuffer;
@@ -39,9 +40,11 @@ public abstract class RemoteRepo {
 
     public abstract String queryResToJson(List<DownloadedLibPackage> resList, int limit);
 
-    public abstract ByteBuffer fetch(String key);
+    public abstract FileInfo fetch(String key);
 
     public abstract String queryLibsByGAV(String groupName, String artifactId, String version, boolean jsonOutput, int limit);
+
+    public abstract FileInfo getFileInfoFromRepo(String key);
 
 
 

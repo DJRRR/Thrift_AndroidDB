@@ -1,20 +1,19 @@
-package cn.fudan.libdb.core;
+package cn.fudan.libdb.remote;
 
 import cn.fudan.libdb.dao.model.DownloadedLibPackage;
+import cn.fudan.libdb.thrift.FileInfo;
 
-import java.nio.ByteBuffer;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
  * @author Dai Jiarun
  * @date 2018/7/5
  */
-public class GeneralRemoteRepo extends RemoteRepo{
-    private static GeneralRemoteRepo singleInstance;
-    public synchronized static GeneralRemoteRepo getInstance(){
+public class LibRemoteRepo extends RemoteRepo{
+    private static LibRemoteRepo singleInstance;
+    public synchronized static LibRemoteRepo getInstance(){
         if(singleInstance == null){
-            singleInstance = new GeneralRemoteRepo();
+            singleInstance = new LibRemoteRepo();
         }
         return singleInstance;
     }
@@ -44,7 +43,12 @@ public class GeneralRemoteRepo extends RemoteRepo{
 
 
     @Override
-    public ByteBuffer fetch(String key){
+    public FileInfo getFileInfoFromRepo(String key){
+        throw new RuntimeException("not support");
+    }
+
+    @Override
+    public FileInfo fetch(String key){
         throw new RuntimeException("not support");
     }
 

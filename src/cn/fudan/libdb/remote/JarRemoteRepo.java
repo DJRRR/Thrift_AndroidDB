@@ -1,16 +1,18 @@
-package cn.fudan.libdb.core;
+package cn.fudan.libdb.remote;
 
 import cn.fudan.libdb.LibDBConfig;
 import cn.fudan.libdb.dao.model.DownloadedLibPackage;
+import cn.fudan.libdb.thrift.FileInfo;
 
 import java.io.File;
-import java.nio.ByteBuffer;
-import java.util.ArrayList;
 import java.util.List;
 
 import static cn.fudan.libdb.LibDBConfig.PROP_KEY_AAR_ROOT_DIR;
 import static cn.fudan.libdb.LibDBConfig.PROP_KEY_APKLIB_ROOT_DIR;
 import static cn.fudan.libdb.LibDBConfig.PROP_KEY_JAR_ROOT_DIR;
+import static cn.fudan.libdb.util.Constants.AAR_SUFFIX;
+import static cn.fudan.libdb.util.Constants.APKLIB_SUFFIX;
+import static cn.fudan.libdb.util.Constants.JAR_SUFFIX;
 
 /**
  * @author Dai Jiarun
@@ -52,33 +54,34 @@ public class JarRemoteRepo extends RemoteRepo{
         return DownloadedLibPackage.DBHelper.queryResToJarJson(partList);
     }
 
-    private File getFileFromRepo(String key) {
-        File jarFile = new File(JAR_ROOT_DIR, key + ".jar");
+    @Override
+    public FileInfo getFileInfoFromRepo(String key) {
+        File jarFile = new File(JAR_ROOT_DIR, key + JAR_SUFFIX);
         if (jarFile.exists()) {
-            return jarFile;
+            return new FileInfo(readFileToBuffer(jarFile), JAR_SUFFIX);
         }
 
-        jarFile = new File(AAR_ROOT_DIR, key + ".aar");
-        if(jarFile.exists()){
-            return jarFile;
+        File aarFile = new File(AAR_ROOT_DIR, key + AAR_SUFFIX);
+        if(aarFile.exists()){
+            return new FileInfo(readFileToBuffer(aarFile), AAR_SUFFIX);
         }
 
-        jarFile = new File(APKLIB_ROOT_DIR, key + ".apklib");
-        if(jarFile.exists()){
-            return jarFile;
+        File apklibFile = new File(APKLIB_ROOT_DIR, key + APKLIB_SUFFIX);
+        if(apklibFile.exists()){
+            return new FileInfo(readFileToBuffer(apklibFile), APKLIB_SUFFIX);
         }
 
         return null;
     }
 
     @Override
-    public ByteBuffer fetch(String key){
-        File jarFile = getFileFromRepo(key);
-        if(jarFile == null){
+    public FileInfo fetch(String key){
+        FileInfo fileInfo = getFileInfoFromRepo(key);
+        if(fileInfo == null){
             return null;
         }
         else{
-            return readFileToBuffer(jarFile);
+            return fileInfo;
         }
     }
 

@@ -1,5 +1,7 @@
 package cn.fudan.libdb.client;
 
+import cn.fudan.libdb.thrift.FileInfo;
+import cn.fudan.libdb.util.FileHandle;
 import org.apache.thrift.TException;
 
 import java.nio.ByteBuffer;
@@ -18,7 +20,7 @@ public class FetcherThreadPool {
     private List<String> workerQueue = new ArrayList<>();
     private Object notifier = new Object();
     private boolean exitFlag = false;
-    private Map<String, byte[]> downloadedFile = new HashMap<>();
+    private Map<String, FileHandle> downloadedFile = new HashMap<>();
 
     private List<FetcherThread> downloaders = new ArrayList<FetcherThread>();
 
@@ -36,10 +38,10 @@ public class FetcherThreadPool {
                 }
                 if (fileHash != null) {
                     try {
-                        ByteBuffer byteBuffer = LibDBServiceClient.defaultClient().fetch(fileHash);
-                        byte[] content = byteBuffer.array();
+                        FileInfo fileInfo = LibDBServiceClient.defaultClient().fetch(fileHash);
+                        FileHandle fileHandle = new FileHandle(fileInfo.content.array(), fileInfo.getSuffix());
                         synchronized (downloadedFile) {
-                            downloadedFile.put(fileHash, content);
+                            downloadedFile.put(fileHash, fileHandle);
                         }
                     } catch (TException e) {
                         e.printStackTrace();
@@ -90,8 +92,8 @@ public class FetcherThreadPool {
 
     public boolean jobFinished(String fileHash) {return downloadedFile.containsKey(fileHash);}
 
-    public byte[] getAndRemoveResultIfPresent(String fileHash) {
-        byte[] result = null;
+    public FileHandle getAndRemoveResultIfPresent(String fileHash) {
+        FileHandle result = null;
         synchronized (downloadedFile) {
             if (downloadedFile.containsKey(fileHash)) {
                 result = downloadedFile.get(fileHash);
