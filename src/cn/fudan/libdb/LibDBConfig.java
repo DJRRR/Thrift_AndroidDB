@@ -16,14 +16,19 @@ public class LibDBConfig {
     public static final String PROP_KEY_SERVER_BIND_IP = "RPCServerBindIP";
     public static final String PROP_KEY_SERVER_BIND_PORT = "RPCServerBindPort";
     public static final String PROP_KEY_CLIENT_BIND_IP = "RPCClientBindIP";
-    public static final String PROP_KEY_DATABASE_USERNAME = "LibDBUsername";
-    public static final String PROP_KEY_DATABASE_PASSWORD = "LibDBPassword";
-    public static final String PROP_KEY_DATABASE_URL = "LibDBUrl";
+    public static final String PROP_KEY_LIBDATABASE_USERNAME = "LibDBUsername";
+    public static final String PROP_KEY_LIBDATABASE_PASSWORD = "LibDBPassword";
+    public static final String PROP_KEY_LIBDATABASE_URL = "LibDBUrl";
+    public static final String PROP_KEY_APKDATABASE_USERNAME = "ApkDBUsername";
+    public static final String PROP_KEY_APKDATABASE_PASSWORD = "ApkDBPassword";
+    public static final String PROP_KEY_APKDATABASE_URL = "ApkDBUrl";
     public static final String PROP_KEY_DEX_ROOT_DIR = "LibDBDexRootDir";
     public static final String PROP_KEY_JAR_ROOT_DIR = "LibDBJarRootDir";
     public static final String PROP_KEY_SOURCE_ROOT_DIR = "LibDBSourceRootDir";
     public static final String PROP_KEY_AAR_ROOT_DIR = "LibDBAarRootDir";
     public static final String PROP_KEY_APKLIB_ROOT_DIR = "LibDBApklibRootDir";
+    public static final String PROP_KEY_APK_ROOT_DIR = "ApkDBApkRootDir";
+    public static final String PROP_KEY_APK_SOURCE_ROOT_DIR = "ApkDBApkSourceRootDir";
 
     public LibDBConfig() {
     }
@@ -31,13 +36,13 @@ public class LibDBConfig {
     private static synchronized void init() {
         try {
             if (pps == null) {
-                File configFile = new File("libdb.properties/");
+                File configFile = new File(CONFIG_PROPERTIES);
                 if (!configFile.exists()) {
                     configFile.createNewFile();
                 }
 
                 pps = new Properties();
-                pps.load(new FileInputStream("libdb.properties/"));
+                pps.load(new FileInputStream(CONFIG_PROPERTIES));
             }
         } catch (IOException var1) {
             var1.printStackTrace();

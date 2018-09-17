@@ -75,6 +75,16 @@ public class JarRemoteRepo extends RemoteRepo{
     }
 
     @Override
+    public FileInfo getFileInfoFromRepo(String packageName, String versionCode){
+        throw new RuntimeException("Need to be refactored");
+    }
+
+    @Override
+    public FileInfo fetch(String packageName, String versionCode){
+        throw new RuntimeException("Need to be refactored");
+    }
+
+    @Override
     public FileInfo fetch(String key){
         FileInfo fileInfo = getFileInfoFromRepo(key);
         if(fileInfo == null){

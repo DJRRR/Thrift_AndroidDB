@@ -1,8 +1,6 @@
 package cn.fudan.libdb.remote;
 
-import static cn.fudan.libdb.util.Constants.DEX_REPO;
-import static cn.fudan.libdb.util.Constants.JAR_REPO;
-import static cn.fudan.libdb.util.Constants.LIB_REPO;
+import static cn.fudan.libdb.util.Constants.*;
 
 /**
  * @author Dai Jiarun
@@ -18,6 +16,10 @@ public class RemoteRepoFactory {
                 return JarRemoteRepo.getInstance();
             case DEX_REPO:
                 return DexRemoteRepo.getInstance();
+            case APK_REPO:
+                return ApkRemoteRepo.getInstance();
+            case APK_SRC_REPO:
+                return ApkSrcRemoteRepo.getInstance();
             default:
                 System.err.println("Error Repo Type!");
                 return null;

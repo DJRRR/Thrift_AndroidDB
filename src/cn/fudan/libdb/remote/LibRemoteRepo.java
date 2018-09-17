@@ -54,6 +54,16 @@ public class LibRemoteRepo extends RemoteRepo{
 
 
     @Override
+    public FileInfo getFileInfoFromRepo(String packageName, String versionCode){
+        throw new RuntimeException("Need to be refactored");
+    }
+
+    @Override
+    public FileInfo fetch(String packageName, String versionCode){
+        throw new RuntimeException("Need to be refactored");
+    }
+
+    @Override
     public String queryLibsByGAV(String groupName, String artifactId, String version, boolean jsonOutput, int limit){
         List<DownloadedLibPackage> queryRes = DownloadedLibPackage.DBHelper.queryDownloadedLibPackageEliminate(groupName, artifactId, version);
         if(jsonOutput){

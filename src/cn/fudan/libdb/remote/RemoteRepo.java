@@ -36,16 +36,22 @@ public abstract class RemoteRepo {
         return null;
     }
 
+    // TODO: 2018/9/17 Need to be factored(to split apk & lib) 
     public abstract String queryResToStr(List<DownloadedLibPackage> resList, int limit);
 
     public abstract String queryResToJson(List<DownloadedLibPackage> resList, int limit);
 
     public abstract FileInfo fetch(String key);
 
+    public abstract FileInfo fetch(String packageName, String versionCode);
+
     public abstract String queryLibsByGAV(String groupName, String artifactId, String version, boolean jsonOutput, int limit);
 
     public abstract FileInfo getFileInfoFromRepo(String key);
 
+    public abstract FileInfo getFileInfoFromRepo(String packageName, String versionCode);
 
+    
+    
 
 }

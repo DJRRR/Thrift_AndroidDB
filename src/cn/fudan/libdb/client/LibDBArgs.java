@@ -3,6 +3,7 @@ package cn.fudan.libdb.client;
 import com.beust.jcommander.Parameter;
 import com.sun.istack.internal.NotNull;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -50,6 +51,9 @@ public class LibDBArgs {
     @Parameter(names = {"--repo", "-r"}, description = "Repo Type : lib, apk")
     private String repoType;
 
+    @Parameter(names = {"--package", "-p"}, description = "Package Name of Apk")
+    private String packageName;
+
 
     public int getLimit() {
         return limit;
@@ -81,6 +85,10 @@ public class LibDBArgs {
 
     public String getRepoType(){
         return repoType;
+    }
+
+    public String getPackageName(){
+        return packageName;
     }
 
     public boolean isJsonOutput(){
@@ -125,6 +133,60 @@ public class LibDBArgs {
 
     public boolean repoTypeUnset(){
         return repoType == null;
+    }
+
+    public boolean packageNameUnset(){
+        return packageName == null;
+    }
+
+    // TODO: 2018/9/17 to place all check funcs here
+    public static boolean repoTypeCheck(LibDBArgs libDBArgs){
+        if(libDBArgs.repoTypeUnset()){
+            System.err.println("Set type for file fetching(-r lib, apk or apk-src)");
+            return false;
+        }
+        String repoType = libDBArgs.getRepoType();
+        if(!repoType.equals("lib") && !repoType.equals("apk") && !repoType.equals("apk-src")){
+            System.err.println("Error repo type, only support lib, apk, apk-src");
+            return false;
+        }
+
+        return true;
+    }
+
+    public static boolean libQueryCheck(LibDBArgs libDBArgs){
+        if(libDBArgs.groupUnset() && libDBArgs.artifactUnset() && libDBArgs.versionUnset()){
+            System.out.println("Please set -g or -a or -v for a query!");
+            System.err.println("-h for more information");
+            return false;
+        }
+        return true;
+    }
+
+    public static String getDirFromArgs(LibDBArgs libDBArgs){
+        String dirPath = null;
+        if(libDBArgs.outputPathUnset()){
+            //write to current folder
+            dirPath = "./";
+        }
+        else{
+            //write to specified folder
+            dirPath = libDBArgs.getOutputFilePath();
+            File checkDir = new File(dirPath);
+            if((checkDir.exists() && !checkDir.isDirectory()) || (!checkDir.exists())){
+                try {
+                    checkDir.mkdir();
+                }catch (Exception e){
+                    e.printStackTrace();
+                    System.err.println("Fail to create dir " + dirPath);
+                    return null;
+                }
+            }
+            if(!dirPath.endsWith("/")){
+                dirPath += "/";
+            }
+        }
+        return dirPath;
     }
 
 }

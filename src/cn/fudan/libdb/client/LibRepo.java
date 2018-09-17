@@ -22,7 +22,7 @@ public class LibRepo extends FileRepo {
     }
 
     @Override
-    public FileHandle getFile(String fileHash) {
+    public FileHandle getFileHandle(String fileHash) {
         return getLibPackage(fileHash);
     }
 
@@ -34,9 +34,9 @@ public class LibRepo extends FileRepo {
     /*
     * Get the (md5/ sha256)Hash-specified dex/jar/aar/apklib
     * */
-    public static FileHandle getLibPackage(String dexHash) {
+    public static FileHandle getLibPackage(String hash) {
         try {
-            FileInfo result = LibDBServiceClient.defaultClient().fetch(dexHash);
+            FileInfo result = LibDBServiceClient.defaultClient().fetchLibByHash(hash);
             if(result == null){
                 return null;
             }

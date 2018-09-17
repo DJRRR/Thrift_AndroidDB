@@ -17,6 +17,7 @@ import java.net.InetSocketAddress;
  * @date 2018/7/5
  */
 public class LibDBServiceServer {
+    // TODO: 2018/9/17 to add server log function
     public static void main(String[] args) throws TTransportException{
         System.out.println("LibDB Service Starts...");
 

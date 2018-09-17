@@ -23,8 +23,32 @@ service LibDBService{
    string queryLibsByGAV(1:string groupName 2:string artifactId 3:string version 4:string repoType 5:bool jsonOutput 6:int limit)
 
    /*
-   * download a lib package from server((source, dex or jar(including aar & apklib))
+   * download a lib package from server((dex or jar(including aar & apklib))
    */
-   FileInfo fetch(1:string hash)
+   FileInfo fetchLibByHash(1:string hash)
+
+
+   /*
+   * download a apk package from server(only support fdroid apks now) by hash
+   */
+   FileInfo fetchApkByHash(1:string hash)
+
+
+   /*
+   * download a apk package from server(only support fdroid apks now) by packagename & versioncode
+   */
+   FileInfo fetchApkByName(1:string packageName 2:string versionCode)
+
+   /*
+   * download a apk-src package from server(only support fdroid apks now) by hash
+   */
+   FileInfo fetchApkSrcByHash(1:string hash)
+
+
+   /*
+   * download a apk-src package from server(only support fdroid apks now) by packagename & versioncode
+   */
+   FileInfo fetchApkSrcByName(1:string packageName 2:string versionCode)
+
 
 }

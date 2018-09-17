@@ -63,6 +63,16 @@ public class DexRemoteRepo extends RemoteRepo {
     }
 
     @Override
+    public FileInfo getFileInfoFromRepo(String packageName, String versionCode){
+        throw new RuntimeException("Need to be refactored");
+    }
+
+    @Override
+    public FileInfo fetch(String packageName, String versionCode){
+        throw new RuntimeException("Need to be refactored");
+    }
+
+    @Override
     public FileInfo fetch(String key){
         FileInfo fileInfo = getFileInfoFromRepo(key);
         if(fileInfo == null){
@@ -72,7 +82,6 @@ public class DexRemoteRepo extends RemoteRepo {
             return fileInfo;
         }
     }
-
 
     @Override
     public String queryLibsByGAV(String groupName, String artifactId, String version, boolean jsonOutput, int limit){

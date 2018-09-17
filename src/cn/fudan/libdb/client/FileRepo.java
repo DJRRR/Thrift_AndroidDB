@@ -68,11 +68,11 @@ public abstract class FileRepo {
         fileToCache.clear();
     }
 
-    public abstract FileHandle getFile(String fileHash);
+    public abstract FileHandle getFileHandle(String fileHash);
 
     public abstract boolean hashValCheck(String fileHash);
 
-    public FileHandle syncGetFile(String fileHash) {
+    public FileHandle syncGetFileHandle(String fileHash) {
         if(!hashValCheck(fileHash)){
             return null;
         }
@@ -98,13 +98,13 @@ public abstract class FileRepo {
         else {
             if (fileToCache.contains(fileHash))
                 fileToCache.remove(fileHash);
-            return getFile(fileHash);
+            return getFileHandle(fileHash);
         }
     }
 
     public void asyncGetFile(String apkHash, FileProcessor processor) {
         new Thread(() -> {
-            FileHandle fileHandle = syncGetFile(apkHash);
+            FileHandle fileHandle = syncGetFileHandle(apkHash);
             processor.process(fileHandle);
         }).start();
     }

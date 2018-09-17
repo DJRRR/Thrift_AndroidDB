@@ -83,7 +83,7 @@ public class DownloadedLibPackage {
         public static synchronized void init() {
             try {
                 if (!init_tested) {
-                    createTableIfNotExists(DBUtil.getConnectionSource());
+                    createTableIfNotExists(DBUtil.getLibDBConnectionSource());
                     init_tested = true;
                 }
             } catch (SQLException e) {
@@ -103,7 +103,7 @@ public class DownloadedLibPackage {
             init();
 
             try {
-                Dao<DownloadedLibPackage, String> dao = DaoManager.createDao(DBUtil.getConnectionSource(), DownloadedLibPackage.class);
+                Dao<DownloadedLibPackage, String> dao = DaoManager.createDao(DBUtil.getLibDBConnectionSource(), DownloadedLibPackage.class);
 
                 List<DownloadedLibPackage> allPkgs = dao.queryForAll();
                 return allPkgs;
@@ -116,7 +116,7 @@ public class DownloadedLibPackage {
         public static List<DownloadedLibPackage> queryDownloadedLibPackage(String groupName, String artifactId){
             init();
             try{
-                Dao<DownloadedLibPackage, String> dao = DaoManager.createDao(DBUtil.getConnectionSource(), DownloadedLibPackage.class);
+                Dao<DownloadedLibPackage, String> dao = DaoManager.createDao(DBUtil.getLibDBConnectionSource(), DownloadedLibPackage.class);
 
                 List<DownloadedLibPackage> allPkgs = dao.queryBuilder().where().eq("groupName",groupName).and().eq("artifactId",artifactId).query();
 
@@ -158,7 +158,7 @@ public class DownloadedLibPackage {
         public static List<DownloadedLibPackage> queryDownloadedLibPackageByGA(String groupName, String artifactId){
             init();
             try{
-                Dao<DownloadedLibPackage, String> dao = DaoManager.createDao(DBUtil.getConnectionSource(), DownloadedLibPackage.class);
+                Dao<DownloadedLibPackage, String> dao = DaoManager.createDao(DBUtil.getLibDBConnectionSource(), DownloadedLibPackage.class);
 
                 List<DownloadedLibPackage> allPkgs = dao.queryBuilder().where().eq("groupName",groupName).and().eq("artifactId",artifactId).query();
 
@@ -173,7 +173,7 @@ public class DownloadedLibPackage {
         public static List<DownloadedLibPackage> queryDownloadedLibPackageByGV(String groupName, String version){
             init();
             try{
-                Dao<DownloadedLibPackage, String> dao = DaoManager.createDao(DBUtil.getConnectionSource(), DownloadedLibPackage.class);
+                Dao<DownloadedLibPackage, String> dao = DaoManager.createDao(DBUtil.getLibDBConnectionSource(), DownloadedLibPackage.class);
 
                 List<DownloadedLibPackage> allPkgs = dao.queryBuilder().where().eq("groupName",groupName).and().eq("version",version).query();
 
@@ -188,7 +188,7 @@ public class DownloadedLibPackage {
         public static List<DownloadedLibPackage> queryDownloadedLibPackageByAV(String artifactId, String version){
             init();
             try{
-                Dao<DownloadedLibPackage, String> dao = DaoManager.createDao(DBUtil.getConnectionSource(), DownloadedLibPackage.class);
+                Dao<DownloadedLibPackage, String> dao = DaoManager.createDao(DBUtil.getLibDBConnectionSource(), DownloadedLibPackage.class);
 
                 List<DownloadedLibPackage> allPkgs = dao.queryBuilder().where().eq("version",version).and().eq("artifactId",artifactId).query();
 
@@ -204,7 +204,7 @@ public class DownloadedLibPackage {
             init();
 
             try {
-                Dao<DownloadedLibPackage, String> dao = DaoManager.createDao(DBUtil.getConnectionSource(), DownloadedLibPackage.class);
+                Dao<DownloadedLibPackage, String> dao = DaoManager.createDao(DBUtil.getLibDBConnectionSource(), DownloadedLibPackage.class);
 
                 List<DownloadedLibPackage> result = dao.queryBuilder()
                         .where().eq("groupName", groupName)
@@ -220,7 +220,7 @@ public class DownloadedLibPackage {
         public static List<DownloadedLibPackage> queryDownloadedLibPackageByG(String groupName){
             init();
             try{
-                Dao<DownloadedLibPackage, String> dao = DaoManager.createDao(DBUtil.getConnectionSource(), DownloadedLibPackage.class);
+                Dao<DownloadedLibPackage, String> dao = DaoManager.createDao(DBUtil.getLibDBConnectionSource(), DownloadedLibPackage.class);
 
                 List<DownloadedLibPackage> result = dao.queryBuilder().where().eq("groupName",groupName).query();
                 return result;
@@ -233,7 +233,7 @@ public class DownloadedLibPackage {
         public static List<DownloadedLibPackage> queryDownloadedLibPackageByA(String artifactId){
             init();
             try{
-                Dao<DownloadedLibPackage, String> dao = DaoManager.createDao(DBUtil.getConnectionSource(), DownloadedLibPackage.class);
+                Dao<DownloadedLibPackage, String> dao = DaoManager.createDao(DBUtil.getLibDBConnectionSource(), DownloadedLibPackage.class);
 
                 List<DownloadedLibPackage> result = dao.queryBuilder().where().eq("artifactId", artifactId).query();
                 return result;
@@ -246,7 +246,7 @@ public class DownloadedLibPackage {
         public static List<DownloadedLibPackage> queryDownloadedLibPackageByV(String version){
             init();
             try{
-                Dao<DownloadedLibPackage, String> dao = DaoManager.createDao(DBUtil.getConnectionSource(), DownloadedLibPackage.class);
+                Dao<DownloadedLibPackage, String> dao = DaoManager.createDao(DBUtil.getLibDBConnectionSource(), DownloadedLibPackage.class);
 
                 List<DownloadedLibPackage> result = dao.queryBuilder().where().eq("version",version).query();
                 return result;
@@ -260,7 +260,7 @@ public class DownloadedLibPackage {
             init();
 
             try {
-                Dao<DownloadedLibPackage, String> dao = DaoManager.createDao(DBUtil.getConnectionSource(), DownloadedLibPackage.class);
+                Dao<DownloadedLibPackage, String> dao = DaoManager.createDao(DBUtil.getLibDBConnectionSource(), DownloadedLibPackage.class);
 
                 dao.create(pkg);
                 return true;
@@ -274,7 +274,7 @@ public class DownloadedLibPackage {
             init();
 
             try {
-                Dao<DownloadedLibPackage, String> dao = DaoManager.createDao(DBUtil.getConnectionSource(), DownloadedLibPackage.class);
+                Dao<DownloadedLibPackage, String> dao = DaoManager.createDao(DBUtil.getLibDBConnectionSource(), DownloadedLibPackage.class);
 
                 if (dao.queryBuilder()
                         .where().eq("groupName", pkg.groupName)
@@ -303,7 +303,7 @@ public class DownloadedLibPackage {
             init();
 
             try {
-                Dao<DownloadedLibPackage, String> dao = DaoManager.createDao(DBUtil.getConnectionSource(), DownloadedLibPackage.class);
+                Dao<DownloadedLibPackage, String> dao = DaoManager.createDao(DBUtil.getLibDBConnectionSource(), DownloadedLibPackage.class);
 
                 List<DownloadedLibPackage> result = dao.queryBuilder()
                         .where().eq("groupName", groupName)
@@ -324,7 +324,7 @@ public class DownloadedLibPackage {
             init();
 
             try {
-                Dao<DownloadedLibPackage, String> dao = DaoManager.createDao(DBUtil.getConnectionSource(), DownloadedLibPackage.class);
+                Dao<DownloadedLibPackage, String> dao = DaoManager.createDao(DBUtil.getLibDBConnectionSource(), DownloadedLibPackage.class);
 
                 UpdateBuilder<DownloadedLibPackage, String> updateBuilder = dao.updateBuilder();
                 updateBuilder.updateColumnValue("jarFileMD5", pkg.jarFileMD5)

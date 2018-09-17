@@ -53,7 +53,7 @@ public class ParsedLibPackage {
         public static synchronized void init() {
             try {
                 if (!init_tested) {
-                    createTableIfNotExists(DBUtil.getConnectionSource());
+                    createTableIfNotExists(DBUtil.getLibDBConnectionSource());
                     init_tested = true;
                 }
             } catch (SQLException e) {
@@ -73,7 +73,7 @@ public class ParsedLibPackage {
             init();
 
             try {
-                Dao<ParsedLibPackage, String> dao = DaoManager.createDao(DBUtil.getConnectionSource(), ParsedLibPackage.class);
+                Dao<ParsedLibPackage, String> dao = DaoManager.createDao(DBUtil.getLibDBConnectionSource(), ParsedLibPackage.class);
 
                 return dao.queryForAll();
             } catch (SQLException e) {
@@ -86,7 +86,7 @@ public class ParsedLibPackage {
             init();
 
             try {
-                Dao<ParsedLibPackage, String> dao = DaoManager.createDao(DBUtil.getConnectionSource(), ParsedLibPackage.class);
+                Dao<ParsedLibPackage, String> dao = DaoManager.createDao(DBUtil.getLibDBConnectionSource(), ParsedLibPackage.class);
 
                 return dao.queryBuilder()
                         .where().eq("groupName", groupName)
@@ -101,7 +101,7 @@ public class ParsedLibPackage {
         public static List<ParsedLibPackage> queryAlldependencyUnAnalyzed() {
             init();
             try {
-                Dao<ParsedLibPackage, String> dao = DaoManager.createDao(DBUtil.getConnectionSource(), ParsedLibPackage.class);
+                Dao<ParsedLibPackage, String> dao = DaoManager.createDao(DBUtil.getLibDBConnectionSource(), ParsedLibPackage.class);
 
                 List<ParsedLibPackage> resList = dao.queryBuilder().where().eq("dependencyAnalyze", 0).query();
                 return resList;
@@ -115,7 +115,7 @@ public class ParsedLibPackage {
         public static List<ParsedLibPackage> queryAllToDownload() {
             init();
             try {
-                Dao<ParsedLibPackage, String> dao = DaoManager.createDao(DBUtil.getConnectionSource(), ParsedLibPackage.class);
+                Dao<ParsedLibPackage, String> dao = DaoManager.createDao(DBUtil.getLibDBConnectionSource(), ParsedLibPackage.class);
                 List<ParsedLibPackage> resList = dao.queryBuilder().where().eq("downloadState", 0).query();
                 return resList;
             } catch (SQLException e) {
@@ -127,7 +127,7 @@ public class ParsedLibPackage {
         public static List<ParsedLibPackage> queryAllDownloadSuccess() {
             init();
             try {
-                Dao<ParsedLibPackage, String> dao = DaoManager.createDao(DBUtil.getConnectionSource(), ParsedLibPackage.class);
+                Dao<ParsedLibPackage, String> dao = DaoManager.createDao(DBUtil.getLibDBConnectionSource(), ParsedLibPackage.class);
                 List<ParsedLibPackage> resList = dao.queryBuilder().where().eq("downloadState", 1).query();
                 return resList;
             } catch (SQLException e) {
@@ -139,7 +139,7 @@ public class ParsedLibPackage {
         public static int getParsedPkgId(String groupName, String artifactId, String version) {
             init();
             try {
-                Dao<ParsedLibPackage, String> dao = DaoManager.createDao(DBUtil.getConnectionSource(), ParsedLibPackage.class);
+                Dao<ParsedLibPackage, String> dao = DaoManager.createDao(DBUtil.getLibDBConnectionSource(), ParsedLibPackage.class);
                 ParsedLibPackage res = dao.queryBuilder().where().eq("groupName", groupName).
                         and().eq("artifactId", artifactId).
                         and().eq("version", version).queryForFirst();
@@ -157,7 +157,7 @@ public class ParsedLibPackage {
         public static boolean updatedependencyAnalyzeState(int pkgId, int updateState) {
             init();
             try {
-                Dao<ParsedLibPackage, String> dao = DaoManager.createDao(DBUtil.getConnectionSource(), ParsedLibPackage.class);
+                Dao<ParsedLibPackage, String> dao = DaoManager.createDao(DBUtil.getLibDBConnectionSource(), ParsedLibPackage.class);
                 UpdateBuilder<ParsedLibPackage, String> updateBuilder = dao.updateBuilder();
                 updateBuilder.updateColumnValue("dependencyAnalyze", updateState);
 
@@ -174,7 +174,7 @@ public class ParsedLibPackage {
         public static boolean updatedependencyAnalyzeState(String groupName, String artifactId, String version, int updateState) {
             init();
             try {
-                Dao<ParsedLibPackage, String> dao = DaoManager.createDao(DBUtil.getConnectionSource(), ParsedLibPackage.class);
+                Dao<ParsedLibPackage, String> dao = DaoManager.createDao(DBUtil.getLibDBConnectionSource(), ParsedLibPackage.class);
                 UpdateBuilder<ParsedLibPackage, String> updateBuilder = dao.updateBuilder();
                 updateBuilder.updateColumnValue("dependencyAnalyze", updateState);
 
@@ -192,7 +192,7 @@ public class ParsedLibPackage {
         public static boolean updatedownloadState(String groupName, String artifactId, String version, int downloadState) {
             init();
             try {
-                Dao<ParsedLibPackage, String> dao = DaoManager.createDao(DBUtil.getConnectionSource(), ParsedLibPackage.class);
+                Dao<ParsedLibPackage, String> dao = DaoManager.createDao(DBUtil.getLibDBConnectionSource(), ParsedLibPackage.class);
                 UpdateBuilder<ParsedLibPackage, String> updateBuilder = dao.updateBuilder();
                 updateBuilder.updateColumnValue("downloadState", downloadState);
 
@@ -211,7 +211,7 @@ public class ParsedLibPackage {
         public static int getdownloadState(ParsedLibPackage pkg){
             init();
             try {
-                Dao<ParsedLibPackage, String> dao = DaoManager.createDao(DBUtil.getConnectionSource(), ParsedLibPackage.class);
+                Dao<ParsedLibPackage, String> dao = DaoManager.createDao(DBUtil.getLibDBConnectionSource(), ParsedLibPackage.class);
                 ParsedLibPackage res = dao.queryBuilder().where().eq("groupName", pkg.groupName)
                         .and().eq("artifactId", pkg.artifactId)
                         .and().eq("version", pkg.version).queryForFirst();
@@ -225,7 +225,7 @@ public class ParsedLibPackage {
         public static long countVersionNum(String groupName, String artifactId) {
             init();
             try {
-                Dao<ParsedLibPackage, String> dao = DaoManager.createDao(DBUtil.getConnectionSource(), ParsedLibPackage.class);
+                Dao<ParsedLibPackage, String> dao = DaoManager.createDao(DBUtil.getLibDBConnectionSource(), ParsedLibPackage.class);
                 long versionCount = dao.queryBuilder().where().eq("groupName", groupName)
                         .and().eq("artifactId", artifactId).countOf();
                 return versionCount;
@@ -239,7 +239,7 @@ public class ParsedLibPackage {
         public static int getdependencyAnalyzeState(ParsedLibPackage pkg) {
             init();
             try {
-                Dao<ParsedLibPackage, String> dao = DaoManager.createDao(DBUtil.getConnectionSource(), ParsedLibPackage.class);
+                Dao<ParsedLibPackage, String> dao = DaoManager.createDao(DBUtil.getLibDBConnectionSource(), ParsedLibPackage.class);
 
                 ParsedLibPackage res = dao.queryBuilder().where().eq("groupName", pkg.groupName)
                         .and().eq("artifactId", pkg.artifactId)
@@ -255,7 +255,7 @@ public class ParsedLibPackage {
             init();
 
             try {
-                Dao<ParsedLibPackage, String> dao = DaoManager.createDao(DBUtil.getConnectionSource(), ParsedLibPackage.class);
+                Dao<ParsedLibPackage, String> dao = DaoManager.createDao(DBUtil.getLibDBConnectionSource(), ParsedLibPackage.class);
 
                 dao.create(pkg);
                 return true;
@@ -268,7 +268,7 @@ public class ParsedLibPackage {
         public static boolean hasParsedLibPackage(ParsedLibPackage pkg) {
             init();
             try {
-                Dao<ParsedLibPackage, String> dao = DaoManager.createDao(DBUtil.getConnectionSource(), ParsedLibPackage.class);
+                Dao<ParsedLibPackage, String> dao = DaoManager.createDao(DBUtil.getLibDBConnectionSource(), ParsedLibPackage.class);
 
                 if (dao.queryBuilder()
                         .where().eq("groupName", pkg.groupName)
@@ -298,7 +298,7 @@ public class ParsedLibPackage {
         public static boolean updateParsedLibPackage(ParsedLibPackage pkg) {
             init();
             try {
-                Dao<ParsedLibPackage, String> dao = DaoManager.createDao(DBUtil.getConnectionSource(), ParsedLibPackage.class);
+                Dao<ParsedLibPackage, String> dao = DaoManager.createDao(DBUtil.getLibDBConnectionSource(), ParsedLibPackage.class);
 
                 UpdateBuilder<ParsedLibPackage, String> updateBuilder = dao.updateBuilder();
                 updateBuilder.updateColumnValue("jarUrl", pkg.jarUrl)

@@ -1,6 +1,8 @@
 package cn.fudan.libdb.client;
 
 import cn.fudan.libdb.thrift.FileInfo;
+import cn.fudan.libdb.thrift.LibDBService;
+import cn.fudan.libdb.util.Constants;
 import cn.fudan.libdb.util.FileHandle;
 import org.apache.thrift.TException;
 
@@ -27,6 +29,10 @@ public class FetcherThreadPool {
     public FetcherThreadPool(String repoType) {this.repoType = repoType;}
 
     public class FetcherThread extends Thread {
+        private String repoType;
+        public FetcherThread(String repoTyep){
+            this.repoType = repoTyep;
+        }
         @Override
         public void run() {
             while(! exitFlag) {
@@ -38,7 +44,28 @@ public class FetcherThreadPool {
                 }
                 if (fileHash != null) {
                     try {
-                        FileInfo fileInfo = LibDBServiceClient.defaultClient().fetch(fileHash);
+                        FileInfo fileInfo = null;
+                        if(this.repoType.equals(Constants.LIB_REPO)) {
+                            fileInfo = LibDBServiceClient.defaultClient().fetchLibByHash(fileHash);
+                        }
+                        else if(this.repoType.equals(Constants.APK_REPO)){
+                            if(fileHash.length() == 32) {
+                                fileInfo = LibDBServiceClient.defaultClient().fetchApkByHash(fileHash);
+                            }
+                            else if(fileHash.contains("_")){
+                                String[] fileHashSplit = fileHash.split("_");
+                                fileInfo = LibDBServiceClient.defaultClient().fetchApkByName(fileHashSplit[0], fileHashSplit[1]);
+                            }
+                        }
+                        else if(this.repoType.equals(Constants.APK_SRC_REPO)){
+                            if(fileHash.length() == 32) {
+                                fileInfo = LibDBServiceClient.defaultClient().fetchApkSrcByHash(fileHash);
+                            }
+                            else if(fileHash.contains("_")){
+                                String[] fileHashSplit = fileHash.split("_");
+                                fileInfo = LibDBServiceClient.defaultClient().fetchApkSrcByName(fileHashSplit[0], fileHashSplit[1]);
+                            }
+                        }
                         FileHandle fileHandle = new FileHandle(fileInfo.content.array(), fileInfo.getSuffix());
                         synchronized (downloadedFile) {
                             downloadedFile.put(fileHash, fileHandle);
@@ -68,7 +95,7 @@ public class FetcherThreadPool {
         }
 
         for (int i = 0; i < workerSize; i ++) {
-            downloaders.add(new FetcherThread());
+            downloaders.add(new FetcherThread(repoType));
         }
         for (int i = 0; i < workerSize; i ++) {
             downloaders.get(i).start();

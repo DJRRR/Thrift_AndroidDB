@@ -12,18 +12,33 @@ import java.sql.SQLException;
  */
 public class DBUtil {
 
-    private static ConnectionSource connectionSource = null;
+    private static ConnectionSource libDBConnectionSource = null;
+    private static ConnectionSource apkDBConnectionSource = null;
 
-    public static ConnectionSource getConnectionSource() throws SQLException {
-        if (connectionSource != null)
-            return connectionSource;
+
+    public static ConnectionSource getLibDBConnectionSource() throws SQLException {
+        if (libDBConnectionSource != null)
+            return libDBConnectionSource;
         else {
             synchronized (DBUtil.class) {
-                connectionSource = new JdbcConnectionSource(LibDBConfig.getConfig(LibDBConfig.PROP_KEY_DATABASE_URL));
-                ((JdbcConnectionSource) connectionSource).setUsername(LibDBConfig.getConfig(LibDBConfig.PROP_KEY_DATABASE_USERNAME));
-                ((JdbcConnectionSource) connectionSource).setPassword(LibDBConfig.getConfig(LibDBConfig.PROP_KEY_DATABASE_PASSWORD));
+                libDBConnectionSource = new JdbcConnectionSource(LibDBConfig.getConfig(LibDBConfig.PROP_KEY_LIBDATABASE_URL));
+                ((JdbcConnectionSource) libDBConnectionSource).setUsername(LibDBConfig.getConfig(LibDBConfig.PROP_KEY_LIBDATABASE_USERNAME));
+                ((JdbcConnectionSource) libDBConnectionSource).setPassword(LibDBConfig.getConfig(LibDBConfig.PROP_KEY_LIBDATABASE_PASSWORD));
             }
-            return connectionSource;
+            return libDBConnectionSource;
+        }
+    }
+
+    public static ConnectionSource getApkDBConnectionSource() throws SQLException{
+        if(apkDBConnectionSource != null)
+            return apkDBConnectionSource;
+        else{
+            synchronized (DBUtil.class){
+                apkDBConnectionSource = new JdbcConnectionSource(LibDBConfig.getConfig(LibDBConfig.PROP_KEY_APKDATABASE_URL));
+                ((JdbcConnectionSource) apkDBConnectionSource).setUsername(LibDBConfig.getConfig(LibDBConfig.PROP_KEY_APKDATABASE_USERNAME));
+                ((JdbcConnectionSource) apkDBConnectionSource).setPassword(LibDBConfig.getConfig(LibDBConfig.PROP_KEY_APKDATABASE_PASSWORD));
+            }
+            return apkDBConnectionSource;
         }
     }
 

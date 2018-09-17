@@ -21,6 +21,10 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.LinkedBlockingDeque;
 
+import static cn.fudan.libdb.client.LibDBArgs.getDirFromArgs;
+import static cn.fudan.libdb.client.LibDBArgs.libQueryCheck;
+import static cn.fudan.libdb.client.LibDBArgs.repoTypeCheck;
+
 /**
  * @author Dai Jiarun
  * @date 2018/7/5
@@ -110,11 +114,11 @@ public class LibDBServiceClient implements LibDBService.Iface{
     }
 
     @Override
-    public FileInfo fetch(java.lang.String hash) throws org.apache.thrift.TException{
+    public FileInfo fetchLibByHash(java.lang.String hash) throws org.apache.thrift.TException{
         LibDBService.Client client = getAvailableClient();
         FileInfo result = null;
         try {
-            result = client.fetch(hash);
+            result = client.fetchLibByHash(hash);
         }catch (TApplicationException e){
             System.err.println("Fail to fetch " + hash);
         }
@@ -124,21 +128,104 @@ public class LibDBServiceClient implements LibDBService.Iface{
         return result;
     }
 
-    public static FileHandle getFileHandle(String hash, LibDBServiceClient client) throws org.apache.thrift.TException{
-        //ByteBuffer result = client.fetch(hash);
-        FileInfo result = client.fetch(hash);
+    @Override
+    public FileInfo fetchApkByHash(java.lang.String hash) throws org.apache.thrift.TException{
+        LibDBService.Client client = getAvailableClient();
+        FileInfo result = null;
+        try{
+            result = client.fetchApkByHash(hash);
+        }catch (TApplicationException e){
+            System.err.println("Fail to fetch " + hash);
+        }
+        synchronized (clientPool){
+            clientPool.add(client);
+        }
+        return result;
+    }
+
+    @Override
+    public FileInfo fetchApkByName(java.lang.String packageName, java.lang.String versionCode) throws org.apache.thrift.TException{
+        LibDBService.Client client = getAvailableClient();
+        FileInfo result = null;
+        try{
+            result = client.fetchApkByName(packageName, versionCode);
+        }catch (TApplicationException e){
+            System.err.println("Fail to fetch " + packageName + "_" + versionCode);
+        }
+        synchronized (clientPool){
+            clientPool.add(client);
+        }
+        return result;
+    }
+
+    @Override
+    public FileInfo fetchApkSrcByHash(java.lang.String hash) throws org.apache.thrift.TException{
+        LibDBService.Client client = getAvailableClient();
+        FileInfo result = null;
+        try{
+            result = client.fetchApkSrcByHash(hash);
+        }catch (TApplicationException e){
+            System.err.println("Fail to fetch " + hash);
+        }
+        synchronized (clientPool){
+            clientPool.add(client);
+        }
+        return result;
+    }
+
+    @Override
+    public FileInfo fetchApkSrcByName(java.lang.String packageName, java.lang.String versionCode) throws org.apache.thrift.TException{
+        LibDBService.Client client = getAvailableClient();
+        FileInfo result = null;
+        try{
+            result = client.fetchApkSrcByName(packageName, versionCode);
+        }catch (TApplicationException e){
+            System.err.println("Fail to fetch " + packageName + "_" + versionCode);
+        }
+        synchronized (clientPool){
+            clientPool.add(client);
+        }
+        return result;
+    }
+
+
+
+    public static FileHandle getFileHandleOfLib(String hash, LibDBServiceClient client) throws org.apache.thrift.TException{
+        FileInfo result = client.fetchLibByHash(hash);
         return new FileHandle(result.content.array(), result.suffix);
     }
 
+    // TODO: 2018/9/17 to merge FileInfo & FileHandle
+    public static FileHandle getFileHandleOfApk(String hash, LibDBServiceClient client) throws org.apache.thrift.TException{
+        FileInfo result = client.fetchApkByHash(hash);
+        return new FileHandle(result.content.array(), result.suffix);
+    }
+
+    public static FileHandle getFileHandleOfApk(String packageName, String versionCode, LibDBServiceClient client) throws org.apache.thrift.TException{
+        FileInfo result = client.fetchApkByName(packageName, versionCode);
+        return new FileHandle(result.content.array(), result.suffix);
+    }
+
+    public static FileHandle getFileHandleOfApkSrc(String hash, LibDBServiceClient client) throws org.apache.thrift.TException{
+        FileInfo result = client.fetchApkSrcByHash(hash);
+        return new FileHandle(result.content.array(), result.suffix);
+    }
+
+    public static FileHandle getFileHandleOfApkSrc(String packageName, String versioCode, LibDBServiceClient client) throws org.apache.thrift.TException{
+        FileInfo result = client.fetchApkSrcByName(packageName, versioCode);
+        return new FileHandle(result.content.array(), result.suffix);
+    }
+
+    // TODO: 2018/9/17 to collect all handlers separately
+
     public static void queryHandler(LibDBArgs libDBArgs, LibDBServiceClient client) throws TException{
-        if(!repoTypeCheck(libDBArgs)){
+        if(!(repoTypeCheck(libDBArgs) && libQueryCheck(libDBArgs))) {
             return;
         }
-        if(libDBArgs.groupUnset() && libDBArgs.artifactUnset() && libDBArgs.versionUnset()){
-            System.out.println("Please set -g or -a or -v for a query!");
-            System.err.println("-h for more information");
-            return;
+        if(libDBArgs.getRepoType().equals("apk") || libDBArgs.getRepoType().equals("apk-src")){
+            throw new RuntimeException("Unsupported Functionality");
         }
+        // TODO: 2018/9/17 the param "LIB_REPO" is not needed anymore
         String outputRes = client.queryLibsByGAV(libDBArgs.getGroupName(), libDBArgs.getArtifactId(), libDBArgs.getVersion(),
                 "LIB_REPO", libDBArgs.isJsonOutput(), libDBArgs.getLimit());
         if(libDBArgs.outputPathUnset()){
@@ -151,56 +238,9 @@ public class LibDBServiceClient implements LibDBService.Iface{
         }
     }
 
-    public static String getDirFromArgs(LibDBArgs libDBArgs){
-        String dirPath = null;
-        if(libDBArgs.outputPathUnset()){
-            //write to current folder
-            dirPath = "./";
-        }
-        else{
-            //write to specified folder
-            dirPath = libDBArgs.getOutputFilePath();
-            File checkDir = new File(dirPath);
-            if((checkDir.exists() && !checkDir.isDirectory()) || (!checkDir.exists())){
-                try {
-                    checkDir.mkdir();
-                }catch (Exception e){
-                    e.printStackTrace();
-                    System.err.println("Fail to create dir " + dirPath);
-                    return null;
-                }
-            }
-            if(!dirPath.endsWith("/")){
-                dirPath += "/";
-            }
-        }
-        return dirPath;
-    }
-
-    public static boolean repoTypeCheck(LibDBArgs libDBArgs){
-        if(libDBArgs.repoTypeUnset()){
-            System.err.println("Set type for file fetching(-r lib or apk)");
-            return false;
-        }
-        String repoType = libDBArgs.getRepoType();
-        if(!repoType.equals("lib") && !repoType.equals("apk")){
-            System.err.println("Error repo type, only support lib and apk");
-            return false;
-        }
-        // TODO: 2018/9/15 to merge apk repo and lib repo
-        if(repoType.equals("apk")){
-            throw new RuntimeException("Apk Repo unsupported yet");
-        }
-        return true;
-    }
-
-
-    public static void singleFetchHandler(LibDBArgs libDBArgs, LibDBServiceClient client) throws TException{
-        if(!repoTypeCheck(libDBArgs)){
-            return;
-        }
+    public static void singleFetchHandler0fLib(LibDBArgs libDBArgs, LibDBServiceClient client) throws TException{
         String hashKey = libDBArgs.getHashKey();
-        FileHandle fileHandle = getFileHandle(hashKey, client);
+        FileHandle fileHandle = getFileHandleOfLib(hashKey, client);
         if(fileHandle == null){
             System.err.println("Fetch failed");
             return;
@@ -225,10 +265,117 @@ public class LibDBServiceClient implements LibDBService.Iface{
         }
     }
 
-    public static void multiFetchHandler(LibDBArgs libDBArgs, LibDBServiceClient client)throws TException{
+    public static void singleFetchHandlerOfApk(LibDBArgs libDBArgs, LibDBServiceClient client) throws TException{
+        String fileName = null;
+        FileHandle fileHandle = null;
+        if(libDBArgs.hashKeyUnset() && (libDBArgs.versionUnset() || libDBArgs.packageNameUnset())){
+            System.err.println("Please set -k or (-g and -v) to fetch apk");
+            return;
+        }
+        else if(!libDBArgs.hashKeyUnset() && (!libDBArgs.versionUnset() || !libDBArgs.packageNameUnset())){
+            System.err.println("Can only set -k or (-g and -v) to fetch apk");
+            return;
+        }
+        else if(!libDBArgs.hashKeyUnset()){
+            fileHandle = getFileHandleOfApk(libDBArgs.getHashKey(), client);
+            fileName = libDBArgs.getHashKey();
+        }
+        else if(!libDBArgs.versionUnset() && !libDBArgs.packageNameUnset()){
+            fileHandle = getFileHandleOfApk(libDBArgs.getPackageName(), libDBArgs.getVersion(), client);
+            fileName = libDBArgs.getPackageName() + "_" + libDBArgs.getVersion();
+        }
+        else{
+            System.err.println("Please set -k or (-g and -v) to fetch apk");
+            return;
+        }
+
+        if(fileHandle == null){
+            System.err.println("Fetch failed");
+            return;
+        }
+        String dirPath = getDirFromArgs(libDBArgs);
+        if(dirPath == null){
+            System.err.println("locate output dir failed");
+            return;
+        }
+
+        String filepath = dirPath + fileName + fileHandle.getSuffix();
+        try {
+            fileHandle.writeFile(filepath);
+            System.out.println("write " + fileHandle.getSuffix() + " to " + filepath);
+        }catch (IOException e){
+            e.printStackTrace();
+            System.err.println("write " + fileHandle.getSuffix() + " to local failed");
+        }
+    }
+
+    public static void singleFetchHandlerOfApkSrc(LibDBArgs libDBArgs, LibDBServiceClient client) throws TException{
+        String fileName = null;
+        FileHandle fileHandle = null;
+        if(libDBArgs.hashKeyUnset() && (libDBArgs.versionUnset() || libDBArgs.packageNameUnset())){
+            System.err.println("Please set -k or (-g and -v) to fetch apk");
+            return;
+        }
+        else if(!libDBArgs.hashKeyUnset() && (!libDBArgs.versionUnset() || !libDBArgs.packageNameUnset())){
+            System.err.println("Can only set -k or (-g and -v) to fetch apk");
+            return;
+        }
+        else if(!libDBArgs.hashKeyUnset()){
+            fileHandle = getFileHandleOfApkSrc(libDBArgs.getHashKey(), client);
+            fileName = libDBArgs.getHashKey();
+        }
+        else if(!libDBArgs.versionUnset() && !libDBArgs.packageNameUnset()){
+            fileHandle = getFileHandleOfApkSrc(libDBArgs.getPackageName(), libDBArgs.getVersion(), client);
+            fileName = libDBArgs.getPackageName() + "_" + libDBArgs.getVersion();
+        }
+        else{
+            System.err.println("Please set -k or (-g and -v) to fetch apk");
+            return;
+        }
+
+        if(fileHandle == null){
+            System.err.println("Fetch failed");
+            return;
+        }
+        String dirPath = getDirFromArgs(libDBArgs);
+        if(dirPath == null){
+            System.err.println("locate output dir failed");
+            return;
+        }
+
+        String filepath = dirPath + fileName + fileHandle.getSuffix();
+        try {
+            fileHandle.writeFile(filepath);
+            System.out.println("write " + fileHandle.getSuffix() + " to " + filepath);
+        }catch (IOException e){
+            e.printStackTrace();
+            System.err.println("write " + fileHandle.getSuffix() + " to local failed");
+        }
+    }
+
+
+
+
+    public static void singleFetchHandler(LibDBArgs libDBArgs, LibDBServiceClient client) throws TException{
         if(!repoTypeCheck(libDBArgs)){
             return;
         }
+        if(libDBArgs.getRepoType().equals("lib")){
+            singleFetchHandler0fLib(libDBArgs, client);
+        }
+        else if(libDBArgs.getRepoType().equals("apk")){
+            singleFetchHandlerOfApk(libDBArgs, client);
+        }
+        else if(libDBArgs.getRepoType().equals("apk-src")){
+            singleFetchHandlerOfApkSrc(libDBArgs, client);
+        }
+        else{
+            throw new RuntimeException("Should not reach here in LibDBServiceClient.singleFetchHandler");
+        }
+
+    }
+
+    public static void multiFetchHandlerOfLib(LibDBArgs libDBArgs, LibDBServiceClient client)throws TException{
         String dirPath = getDirFromArgs(libDBArgs);
         if(dirPath == null){
             System.err.println("locate output dir failed");
@@ -250,19 +397,15 @@ public class LibDBServiceClient implements LibDBService.Iface{
                         synchronized (items) {
                             hashVal = items.poll();
                         }
-                        if(!(hashVal.length() == 32 || hashVal.length() == 64)){
-                            System.err.println(hashVal + " Error length or hash key(only support md5 and sha256)");
-                            continue;
-                        }
                         if (hashVal != null) {
-                            FileHandle fileHandle = fileRepo.syncGetFile(hashVal);
+                            FileHandle fileHandle = fileRepo.syncGetFileHandle(hashVal);
                             if (fileHandle == null) {
                                 System.out.println( hashVal + " no such file");
                                 continue;
                             }
                             String actualHashVal = fileHandle.getContentHash();
                             System.out.println(dateFormat.format(new Date())+"\t" + hashVal + "\t" + actualHashVal
-                                                                                +"\t" + hashVal.equals(actualHashVal));
+                                    +"\t" + hashVal.equals(actualHashVal));
                             if(hashVal.equals(actualHashVal)){
                                 try {
                                     fileHandle.writeFile(dirPath + hashVal + fileHandle.getSuffix());
@@ -302,24 +445,181 @@ public class LibDBServiceClient implements LibDBService.Iface{
         fileRepo.exit();
     }
 
+    public static void multiFetchHandlerOfApk(LibDBArgs libDBArgs, LibDBServiceClient client) throws TException{
+        String dirPath = getDirFromArgs(libDBArgs);
+        if(dirPath == null){
+            System.err.println("locate output dir failed");
+            return;
+        }
+        String hashListFilePath = libDBArgs.getHashListFilePath();
+        FileRepo fileRepo;
+        fileRepo = new ApkRepo(hashListFilePath,20);
+        THREAD_COUNT = Math.min(fileRepo.getFileHashListSize(), THREAD_COUNT);
+        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        List<String> hashList = fileRepo.getFileHashList();
+        Queue<String> items = new LinkedBlockingDeque<>(hashList);
+        for (int i = 0; i < THREAD_COUNT; i ++) {
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    while (items.size() != 0) {
+                        String hashVal = null;
+                        synchronized (items) {
+                            hashVal = items.poll();
+                        }
+
+                        if (hashVal != null) {
+                            FileHandle fileHandle = fileRepo.syncGetFileHandle(hashVal);
+                            if (fileHandle == null) {
+                                System.out.println( hashVal + " no such file");
+                                continue;
+                            }
+                            String actualHashVal = fileHandle.getContentHash();
+                            System.out.println(dateFormat.format(new Date())+"\t" + hashVal + "\t" + actualHashVal
+                                    +"\t" + hashVal.equals(actualHashVal));
+                            try {
+                                fileHandle.writeFile(dirPath + hashVal + fileHandle.getSuffix());
+                            }catch (IOException e){
+                                e.printStackTrace();
+                            }
+
+                        }
+                        try {
+                            Thread.sleep(10);
+                        }
+                        catch (InterruptedException ex) {
+                            ex.printStackTrace();
+                        }
+                    }
+
+                    synchronized (LibDBServiceClient.class) {
+                        THREAD_COUNT--;
+                    }
+                }
+            }).start();
+        }
+
+        while (true) {
+            synchronized (LibDBServiceClient.class) {
+                if (THREAD_COUNT == 0)
+                    break;
+            }
+            try {
+                Thread.sleep(10);
+            }
+            catch (InterruptedException ex) {
+                ex.printStackTrace();
+            }
+        }
+
+        fileRepo.exit();
+    }
+
+    public static void multiFetchHandlerOfApkSrc(LibDBArgs libDBArgs, LibDBServiceClient client) throws TException{
+        String dirPath = getDirFromArgs(libDBArgs);
+        if(dirPath == null){
+            System.err.println("locate output dir failed");
+            return;
+        }
+        String hashListFilePath = libDBArgs.getHashListFilePath();
+        FileRepo fileRepo;
+        fileRepo = new ApkSrcRepo(hashListFilePath,20);
+        THREAD_COUNT = Math.min(fileRepo.getFileHashListSize(), THREAD_COUNT);
+        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        List<String> hashList = fileRepo.getFileHashList();
+        Queue<String> items = new LinkedBlockingDeque<>(hashList);
+        for (int i = 0; i < THREAD_COUNT; i ++) {
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    while (items.size() != 0) {
+                        String hashVal = null;
+                        synchronized (items) {
+                            hashVal = items.poll();
+                        }
+                        if (hashVal != null) {
+                            FileHandle fileHandle = fileRepo.syncGetFileHandle(hashVal);
+                            if (fileHandle == null) {
+                                System.out.println( hashVal + " no such file");
+                                continue;
+                            }
+                            String actualHashVal = fileHandle.getContentHash();
+                            System.out.println(dateFormat.format(new Date())+"\t" + hashVal + "\t" + actualHashVal
+                                    +"\t" + hashVal.equals(actualHashVal));
+
+                            try {
+                                fileHandle.writeFile(dirPath + hashVal + fileHandle.getSuffix());
+                            }catch (IOException e){
+                                e.printStackTrace();
+                            }
+
+                        }
+                        try {
+                            Thread.sleep(10);
+                        }
+                        catch (InterruptedException ex) {
+                            ex.printStackTrace();
+                        }
+                    }
+
+                    synchronized (LibDBServiceClient.class) {
+                        THREAD_COUNT--;
+                    }
+                }
+            }).start();
+        }
+
+        while (true) {
+            synchronized (LibDBServiceClient.class) {
+                if (THREAD_COUNT == 0)
+                    break;
+            }
+            try {
+                Thread.sleep(10);
+            }
+            catch (InterruptedException ex) {
+                ex.printStackTrace();
+            }
+        }
+
+        fileRepo.exit();
+    }
+
+    public static void multiFetchHandler(LibDBArgs libDBArgs, LibDBServiceClient client)throws TException{
+        if(!repoTypeCheck(libDBArgs)){
+            return;
+        }
+        if(libDBArgs.getRepoType().equals("lib")){
+            multiFetchHandlerOfLib(libDBArgs, client);
+        }
+        else if(libDBArgs.getRepoType().equals("apk")){
+            multiFetchHandlerOfApk(libDBArgs, client);
+        }
+        else if(libDBArgs.getRepoType().equals("apk-src")){
+            multiFetchHandlerOfApkSrc(libDBArgs, client);
+        }
+        else{
+            throw new RuntimeException("Should not reach here in LibDBServiceClient.multiFetchHandler");
+        }
+    }
+
     public static void fetchHandler(LibDBArgs libDBArgs, LibDBServiceClient client) throws TException{
-        if(!libDBArgs.hashKeyUnset() && !libDBArgs.hashListFilePathUnset()){
-            System.err.println("Please specify the operation type of fetch(-k or -hl)");
+        if(!libDBArgs.hashKeyUnset() && !libDBArgs.hashListFilePathUnset() && (!libDBArgs.versionUnset() || !libDBArgs.packageNameUnset())){
+            System.err.println("Please specify the operation type of fetch(-k, -hl, (-p,-v))");
             System.err.println("-h for more information");
             return;
         }
-        if(!libDBArgs.hashKeyUnset()){
+        if(!libDBArgs.hashKeyUnset() || (!libDBArgs.packageNameUnset() && !libDBArgs.versionUnset())){
             singleFetchHandler(libDBArgs, client);
         }
         else if (!libDBArgs.hashListFilePathUnset()){
             multiFetchHandler(libDBArgs, client);
         }
         else{
-            System.err.println("No specified fetch operation, please set -k or -hl");
+            System.err.println("No specified fetch operation, please set -k, -hl, (-p, -v)");
             System.err.println("-h for more information");
             return;
         }
-
 
     }
 

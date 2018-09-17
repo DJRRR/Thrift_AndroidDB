@@ -3,8 +3,7 @@ package cn.fudan.libdb.thrift;
 import cn.fudan.libdb.remote.RemoteRepo;
 import cn.fudan.libdb.remote.RemoteRepoFactory;
 
-import static cn.fudan.libdb.util.Constants.DEX_REPO;
-import static cn.fudan.libdb.util.Constants.JAR_REPO;
+import static cn.fudan.libdb.util.Constants.*;
 
 
 /**
@@ -26,7 +25,7 @@ public class LibDBServiceImpl implements LibDBService.Iface {
 
     //TODO: to support source-code fetcher
     @Override
-    public FileInfo fetch(java.lang.String hash) throws org.apache.thrift.TException{
+    public FileInfo fetchLibByHash(java.lang.String hash) throws org.apache.thrift.TException{
         RemoteRepo remoteRepo;
         if(hash.length() == 32){//md5 jar()
             remoteRepo = RemoteRepoFactory.getRepo(JAR_REPO);
@@ -37,6 +36,38 @@ public class LibDBServiceImpl implements LibDBService.Iface {
             return remoteRepo.fetch(hash);
         }
         return null;
+    }
+
+    @Override
+    public FileInfo fetchApkByHash(java.lang.String hash) throws org.apache.thrift.TException{
+        RemoteRepo remoteRepo;
+        if(hash.length() == 32){//md5
+            remoteRepo = RemoteRepoFactory.getRepo(APK_REPO);
+            return remoteRepo.fetch(hash);
+        }
+        return null;
+    }
+
+    @Override
+    public FileInfo fetchApkByName(java.lang.String packageName, java.lang.String versionCode) throws org.apache.thrift.TException{
+        RemoteRepo remoteRepo = RemoteRepoFactory.getRepo(APK_REPO);
+        return remoteRepo.fetch(packageName, versionCode);
+    }
+
+    @Override
+    public FileInfo fetchApkSrcByHash(java.lang.String hash) throws org.apache.thrift.TException{
+        RemoteRepo remoteRepo;
+        if(hash.length() == 32){//md5
+            remoteRepo = RemoteRepoFactory.getRepo(APK_SRC_REPO);
+            return remoteRepo.fetch(hash);
+        }
+        return null;
+    }
+
+    @Override
+    public FileInfo fetchApkSrcByName(java.lang.String packageName, java.lang.String versionCode) throws org.apache.thrift.TException{
+        RemoteRepo remoteRepo = RemoteRepoFactory.getRepo(APK_SRC_REPO);
+        return remoteRepo.fetch(packageName, versionCode);
     }
 
 

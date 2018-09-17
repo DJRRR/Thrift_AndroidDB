@@ -44,7 +44,9 @@ public class FileHandle {
     }
 
     public String getContentHash(){
-        if(fileSuffix.equals(JAR_SUFFIX) || fileSuffix.equals(AAR_SUFFIX) || fileSuffix.equals(APKLIB_SUFFIX)){
+        if(fileSuffix.equals(JAR_SUFFIX) || fileSuffix.equals(AAR_SUFFIX)
+                || fileSuffix.equals(APKLIB_SUFFIX) || fileSuffix.equals(APK_SUFFIX)
+                || fileSuffix.equals(APK_SRC_SUFFIX)){
             return getContentHashMD5();
         }
         else if(fileSuffix.equals(DEX_SUFFIX)){
