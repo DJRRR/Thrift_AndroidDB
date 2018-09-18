@@ -53,8 +53,10 @@ public class FetcherThreadPool {
                                 fileInfo = LibDBServiceClient.defaultClient().fetchApkByHash(fileHash);
                             }
                             else if(fileHash.contains("_")){
-                                String[] fileHashSplit = fileHash.split("_");
-                                fileInfo = LibDBServiceClient.defaultClient().fetchApkByName(fileHashSplit[0], fileHashSplit[1]);
+                                int splitIndex = fileHash.lastIndexOf("_");
+                                String packageName = fileHash.substring(0, splitIndex);
+                                String versionCode = fileHash.substring(splitIndex + 1, fileHash.length());
+                                fileInfo = LibDBServiceClient.defaultClient().fetchApkByName(packageName, versionCode);
                             }
                         }
                         else if(this.repoType.equals(Constants.APK_SRC_REPO)){
@@ -62,8 +64,10 @@ public class FetcherThreadPool {
                                 fileInfo = LibDBServiceClient.defaultClient().fetchApkSrcByHash(fileHash);
                             }
                             else if(fileHash.contains("_")){
-                                String[] fileHashSplit = fileHash.split("_");
-                                fileInfo = LibDBServiceClient.defaultClient().fetchApkSrcByName(fileHashSplit[0], fileHashSplit[1]);
+                                int splitIndex = fileHash.lastIndexOf("_");
+                                String packageName = fileHash.substring(0, splitIndex);
+                                String versionCode = fileHash.substring(splitIndex + 1, fileHash.length());
+                                fileInfo = LibDBServiceClient.defaultClient().fetchApkSrcByName(packageName, versionCode);
                             }
                         }
                         FileHandle fileHandle = new FileHandle(fileInfo.content.array(), fileInfo.getSuffix());

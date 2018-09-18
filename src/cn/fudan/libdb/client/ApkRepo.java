@@ -27,8 +27,10 @@ public class ApkRepo extends FileRepo{
             return getApkPackage(fileHash);
         }
         else if(fileHash.contains("_")){
-            String[] fileHashSplit = fileHash.split("_");
-            return getApkPackage(fileHashSplit[0], fileHashSplit[1]);
+            int splitIndex = fileHash.lastIndexOf("_");
+            String packageName = fileHash.substring(0, splitIndex);
+            String versionCode = fileHash.substring(splitIndex + 1, fileHash.length());
+            return getApkPackage(packageName, versionCode);
         }
         throw new RuntimeException("Should not reach here in ApkRepo.getFileHandle");
     }
@@ -39,8 +41,8 @@ public class ApkRepo extends FileRepo{
             return true;
         }
         else if(fileHash.contains("_")){
-            String[] fileHashSplit = fileHash.split("_");
-            if(fileHashSplit.length == 2){
+            int splitIndex = fileHash.lastIndexOf("_");
+            if(splitIndex != fileHash.length() - 1){
                 return true;
             }
         }

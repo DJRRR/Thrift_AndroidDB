@@ -18,4 +18,6 @@ public class Constants {
     public static final String DEX_REPO = "DEX_REPO";
     public static final String APK_REPO = "APK_REPO";
     public static final String APK_SRC_REPO = "APK_SRC_REPO";
+
+    public static int THREAD_DEFAULT_NUM = 20;
 }
