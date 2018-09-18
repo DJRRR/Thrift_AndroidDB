@@ -1,5 +1,5 @@
-# Thrift_LibDB
-RPC. Third-party Libraries query & fetch
+# Thrift_AndroidkDB
+RPC. Query & Fetch for Android Third-party Libraries and Android Applications(Source code)
 
 Author: **Dai Jiarun**.
 
