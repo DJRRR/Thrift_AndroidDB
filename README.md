@@ -20,7 +20,8 @@ java -cp LibDB.jar cn.fudan.libdb.server.LibDBServiceServer
 ### Repo Type: `-r`
 
 * Third-party libraries: `-r lib`
-* Android applications: `-r apk`   **Unsupported yet**
+* Android applications: `-r apk` **only support fetching fdroid apps**
+* Android application source-code : `-r apk-src` **only support fetching fdroid srcs**
 
 ### Query: `-q`
 
@@ -48,13 +49,14 @@ java -jar .\LibDB.jar -r lib -q -j -g com.github.castorflex.smoothprogressbar
 java -jar .\LibDB.jar -r lib -q -j -g com.github.castorflex.smoothprogressbar -o ./queryres.txt
 ```
 
+
 ### Fetch: `-f`
 
 * Fetch Third-party libraries by hash of .dex, .jar, .aar, .apklib
 
 * hash key: `-k`
 
-* Note that `.dex` file is hashed by `SHA-256(64-bytes)`, while `.jar`(`.aar` / `.apklib`) file is hashed by `MD5(32-byte)`.
+* **Note that** `.dex` file is hashed by `SHA-256(64-bytes)`, while `.jar`(`.aar` / `.apklib`) file is hashed by `MD5(32-byte)`.
 
 Hash values of some other length would not be accepted.
 
@@ -67,10 +69,10 @@ For large amounts of fetching, create a `.txt` file to store all the hash values
 With `--hashlist(-hl)` option set, LibDB provides multi-threading execution.
 
 ```
-java -jar .\LibDB.jar  -f -hl .\hashlist.txt -hlt jar -o E:/testLIBDB/
+java -jar .\LibDB.jar  -f -hl .\libhashlist.txt -hlt jar -o E:/testLIBDB/
 ```
 
-* An example of `hashlist.txt`, a hash key one per line.
+* An example of `libhashlist.txt`, a hash key one per line.
 
 ```
 1e04f3fb93ba00b59cdfa9228cffa59a
@@ -86,13 +88,50 @@ faabee4c188fb1893d42aebe60860be34695a25a41eec805482bc4a1889d4e4a
 fbfaf15d83a842bec8c7ab2e9b5ec69bfd616a57cf602e29e09f63f628ae19b8
 ```
 
+* Fetching android applications and the corresponding source code works in a similar way.
+
+* You can either use hash value of the application(`MD5`) or use the packageName and versionCode to fetch it.
+
+* **Note that** when fetching the source code, the input hash value refers to that of the application rather than the source code itself.
+
+* package name: `-p`
+
+* version code: `-c`
+
+```
+java -jar .\LibDB.jar -f -r apk-src -p org.fdroid.fdroid -v 1004050
+java -jar .\LibDB.jar -f -r apk -p org.fdroid.fdroid -v 1004050
+java -jar .\LibDB.jar -f -r apk-src -k 21817ef7e839d8637a9c9f53d8d629de
+java -jar .\LibDB.jar -f -r apk -k 21817ef7e839d8637a9c9f53d8d629de
+
+```
+* `--hashlist(-hl) option` is still available when applied to `apk/apk-src` repo.
+
+```
+java -jar .\LibDB.jar -f -r apk-src -hl .\apkhashlist.txt
+```
+
+* An example of `libhashlist.txt`, a fetch-task one per line.
+* Here, a legal fetch-task could be a md5 hash or in format of `packageName`_`versionCode`
+
+```
+27bcbc19d3dbad56e7138c574ffd07d2
+58723b5df1d60a7fce7bed71f753ff1c
+e05000bc3a89a003f806a2546165d11b
+com.adguard.android.contentblocker_21002201
+com.adguard.android.contentblocker_21002103
+hu.vsza.adsdroid_11
+```
+
+
 ### Furture Development
 
-* (1) Add Apk Repo
-* (2) Add crawlers for both libs and apks(Need to be authorized)
-* (3) file upload(Need to be authorized)
-* (4) libs analysis
-* (5) …………
+* (1) Add crawlers for both libs and apks(Need to be authorized)
+* (2) file upload(Need to be authorized)
+* (3) libs analysis
+* (4) server log
+* (5) add api interface for convenience of being imported into other projects
+* (6) ………
 
 ### Other
 
