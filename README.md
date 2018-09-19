@@ -1,4 +1,4 @@
-# Thrift_AndroidkDB
+# Thrift_AndroidDB
 RPC. Query & Fetch for Android Third-party Libraries and Android Applications(Source code)
 
 Author: **Dai Jiarun**.
@@ -7,14 +7,14 @@ Organization: **Fudan University. Whitzard Team**
 
 ### Quick Start
 ### Configurations
-* all configuration details stored in `libdb.properties`.
+* all configuration details stored in `androiddb.properties`.
 
 ### Server
 
 * To start the server:
 
 ```
-java -cp LibDB.jar cn.fudan.libdb.server.LibDBServiceServer
+java -cp AndroidDB.jar cn.fudan.androiddb.server.AndroidDBServiceServer
 ```
 
 ### Repo Type: `-r`
@@ -34,19 +34,19 @@ java -cp LibDB.jar cn.fudan.libdb.server.LibDBServiceServer
 * version: `-v`
 
 ```
-java -jar .\LibDB.jar -r lib -q -g com.github.castorflex.smoothprogressbar
+java -jar .\AndroidDB.jar -r lib -q -g com.github.castorflex.smoothprogressbar
 ```
 
 * JSON format: `-j`
 
 ```
-java -jar .\LibDB.jar -r lib -q -j -g com.github.castorflex.smoothprogressbar
+java -jar .\AndroidDB.jar -r lib -q -j -g com.github.castorflex.smoothprogressbar
 ```
 
 * Output query res to file: `-o`
 
 ```
-java -jar .\LibDB.jar -r lib -q -j -g com.github.castorflex.smoothprogressbar -o ./queryres.txt
+java -jar .\AndroidDB.jar -r lib -q -j -g com.github.castorflex.smoothprogressbar -o ./queryres.txt
 ```
 
 
@@ -61,7 +61,7 @@ java -jar .\LibDB.jar -r lib -q -j -g com.github.castorflex.smoothprogressbar -o
 Hash values of some other length would not be accepted.
 
 ```
-java -jar .\LibDB.jar -r lib -f -k 1ddc4f3804cdf219ae7feaf4647a5e1d79bfc1863208fac98cba54bf4b282994
+java -jar .\AndroidDB.jar -r lib -f -k 1ddc4f3804cdf219ae7feaf4647a5e1d79bfc1863208fac98cba54bf4b282994
 ```
 
 For large amounts of fetching, create a `.txt` file to store all the hash values of the packages to be downloaded.
@@ -69,7 +69,7 @@ For large amounts of fetching, create a `.txt` file to store all the hash values
 With `--hashlist(-hl)` option set, LibDB provides multi-threading execution.
 
 ```
-java -jar .\LibDB.jar  -f -hl .\libhashlist.txt -hlt jar -o E:/testLIBDB/
+java -jar .\AndroidDB.jar  -f -hl .\libhashlist.txt -hlt jar -o E:/test/
 ```
 
 * An example of `libhashlist.txt`, a hash key one per line.
@@ -99,16 +99,16 @@ fbfaf15d83a842bec8c7ab2e9b5ec69bfd616a57cf602e29e09f63f628ae19b8
 * version code: `-c`
 
 ```
-java -jar .\LibDB.jar -f -r apk-src -p org.fdroid.fdroid -v 1004050
-java -jar .\LibDB.jar -f -r apk -p org.fdroid.fdroid -v 1004050
-java -jar .\LibDB.jar -f -r apk-src -k 21817ef7e839d8637a9c9f53d8d629de
-java -jar .\LibDB.jar -f -r apk -k 21817ef7e839d8637a9c9f53d8d629de
+java -jar .\AndroidDB.jar -f -r apk-src -p org.fdroid.fdroid -v 1004050
+java -jar .\AndroidDB.jar -f -r apk -p org.fdroid.fdroid -v 1004050
+java -jar .\AndroidDB.jar -f -r apk-src -k 21817ef7e839d8637a9c9f53d8d629de
+java -jar .\AndroidDB.jar -f -r apk -k 21817ef7e839d8637a9c9f53d8d629de
 
 ```
 * `--hashlist(-hl) option` is still available when applied to `apk/apk-src` repo.
 
 ```
-java -jar .\LibDB.jar -f -r apk-src -hl .\apkhashlist.txt
+java -jar .\AndroidDB.jar -f -r apk-src -hl .\apkhashlist.txt
 ```
 
 * An example of `libhashlist.txt`, a fetch-task one per line.
@@ -126,11 +126,11 @@ hu.vsza.adsdroid_11
 
 ### Furture Development
 
-* (1) Add crawlers for both libs and apks(Need to be authorized)
-* (2) file upload(Need to be authorized)
-* (3) libs analysis
-* (4) server log
-* (5) add api interface for convenience of being imported into other projects
+* (1) add api interface for convenience of being imported into other projects
+* (2) Add crawlers for both libs and apks(Need to be authorized)(new branch)
+* (3) file upload(Need to be authorized)
+* (4) libs analysis
+* (5) server log
 * (6) ………
 
 ### Other
@@ -138,7 +138,7 @@ hu.vsza.adsdroid_11
 * For more information:
 
 ```
-java -jar .\LibDB.jar  -h
+java -jar .\AndroidDB.jar  -h
 ```
 
 * Any questions, please email me : 18212010005@fudan.edu.cn
