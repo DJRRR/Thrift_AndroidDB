@@ -1,0 +1,21 @@
+<component name="libraryTable">
+  <library name="androiddb_libs">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/lib/libthrift-0.11.0.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/ParallelExecutor-java.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/ormlite-core-5.0.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/slf4j-api-1.7.25.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/jcommander-1.72.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/ormlite-jdbc-5.0.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/mysql-connector-java-5.1.41-bin.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/gson-2.3.1.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/slf4j-simple-1.7.25.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/sqlite-jdbc-3.16.1.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$PROJECT_DIR$/lib/slf4j-api-1.7.25-sources.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/slf4j-simple-1.7.25-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>
