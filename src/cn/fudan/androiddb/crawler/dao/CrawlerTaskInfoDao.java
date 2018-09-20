@@ -1,7 +1,7 @@
-package cn.fudan.libdb.crawler.dao;
+package cn.fudan.androiddb.crawler.dao;
 
-import cn.fudan.libdb.crawler.crawlerEntity.CrawlerTaskInfo;
-import cn.fudan.libdb.crawler.util.OrmLiteHelper;
+import cn.fudan.androiddb.crawler.crawlerEntity.CrawlerTaskInfo;
+import cn.fudan.androiddb.crawler.util.OrmLiteHelper;
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.dao.DaoManager;
 import com.j256.ormlite.stmt.UpdateBuilder;

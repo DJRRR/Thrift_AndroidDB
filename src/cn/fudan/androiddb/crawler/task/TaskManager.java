@@ -1,10 +1,10 @@
-package cn.fudan.libdb.crawler.task;
+package cn.fudan.androiddb.crawler.task;
 
-import cn.fudan.libdb.client.LibDBArgs;
-import cn.fudan.libdb.crawler.crawlerEntity.CrawlerTaskInfo;
-import cn.fudan.libdb.crawler.dao.AppInfoDao;
-import cn.fudan.libdb.crawler.dao.CrawlerTaskInfoDao;
-import cn.fudan.libdb.crawler.util.DateHelper;
+import cn.fudan.androiddb.client.AndoidDBArgs;
+import cn.fudan.androiddb.crawler.crawlerEntity.CrawlerTaskInfo;
+import cn.fudan.androiddb.crawler.dao.AppInfoDao;
+import cn.fudan.androiddb.crawler.dao.CrawlerTaskInfoDao;
+import cn.fudan.androiddb.crawler.util.DateHelper;
 
 import java.sql.SQLException;
 import java.util.Date;
@@ -33,7 +33,7 @@ public class TaskManager {
     }
 
 
-    public static int  createCrawlerTask(LibDBArgs libDBArgs){
+    public static int  createCrawlerTask(AndoidDBArgs libDBArgs){
         String creator = libDBArgs.getCreator();
         String market = libDBArgs.getMarket();
         String scope = libDBArgs.getScope();

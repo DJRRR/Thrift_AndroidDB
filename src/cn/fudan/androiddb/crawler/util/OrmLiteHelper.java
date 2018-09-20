@@ -1,4 +1,4 @@
-package cn.fudan.libdb.crawler.util;
+package cn.fudan.androiddb.crawler.util;
 
 import com.j256.ormlite.jdbc.JdbcConnectionSource;
 import com.j256.ormlite.jdbc.JdbcPooledConnectionSource;

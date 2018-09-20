@@ -1,6 +1,7 @@
 package cn.fudan.androiddb.client;
 
 import cn.fudan.androiddb.AndroidDBConfig;
+import cn.fudan.androiddb.client.handler.CrawlerHandler;
 import cn.fudan.androiddb.thrift.FileInfo;
 import cn.fudan.androiddb.thrift.AndroidDBService;
 import com.beust.jcommander.JCommander;
@@ -14,6 +15,7 @@ import org.apache.thrift.transport.TTransportException;
 
 import java.util.*;
 
+import static cn.fudan.androiddb.client.handler.CrawlerHandler.crawlerHandler;
 import static cn.fudan.androiddb.client.handler.FetchHandler.fetchHandler;
 import static cn.fudan.androiddb.client.handler.QueryHandler.queryHandler;
 
@@ -179,6 +181,11 @@ public class AndroidDBServiceClient implements AndroidDBService.Iface{
         return result;
     }
 
+    @Override
+    public int startCrawler(int taskId) throws TException {
+        return getAvailableClient().startCrawler(taskId);
+    }
+
     public static void testConnection(AndroidDBServiceClient client) throws TException{
         client.ping(1);
     }
@@ -195,6 +202,9 @@ public class AndroidDBServiceClient implements AndroidDBService.Iface{
         }
         AndroidDBServiceClient client = AndroidDBServiceClient.defaultClient();
        //testConnection(client);
+
+
+
         if(andoidDBArgs.isQuery() && andoidDBArgs.isFetch()){
             System.out.println("Please specify the operation type(-q or -f)");
             System.err.println("-h for more information");
@@ -206,9 +216,13 @@ public class AndroidDBServiceClient implements AndroidDBService.Iface{
         else if(andoidDBArgs.isFetch()){
             fetchHandler(andoidDBArgs, client);
         }
+        else if (andoidDBArgs.isCrawler()){
+            crawlerHandler(andoidDBArgs, client);
+        }
         else{
             System.err.println("No specified operation, please set the operation type(-q or -f).");
             System.err.println("-h for more information");
         }
+
     }
 }

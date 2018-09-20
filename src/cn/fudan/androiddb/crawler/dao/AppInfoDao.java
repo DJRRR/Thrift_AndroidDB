@@ -1,8 +1,8 @@
-package cn.fudan.libdb.crawler.dao;
+package cn.fudan.androiddb.crawler.dao;
 
 
-import cn.fudan.libdb.crawler.crawlerEntity.AppInfo;
-import cn.fudan.libdb.crawler.util.DBHelper;
+import cn.fudan.androiddb.crawler.crawlerEntity.AppInfo;
+import cn.fudan.androiddb.crawler.util.DBHelper;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;

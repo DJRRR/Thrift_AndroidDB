@@ -1,7 +1,9 @@
 package cn.fudan.androiddb.thrift;
 
+import cn.fudan.androiddb.crawler.WorkerManager;
 import cn.fudan.androiddb.remote.RemoteRepo;
 import cn.fudan.androiddb.remote.RemoteRepoFactory;
+import org.apache.thrift.TException;
 
 import static cn.fudan.androiddb.util.Constants.*;
 
@@ -70,6 +72,8 @@ public class AndroidDBServiceImpl implements AndroidDBService.Iface {
         return remoteRepo.fetch(packageName, versionCode);
     }
 
-
-
+    @Override
+    public int startCrawler(int taskId) throws TException {
+        return WorkerManager.instantiate().startWorkerForTask(taskId);
+    }
 }

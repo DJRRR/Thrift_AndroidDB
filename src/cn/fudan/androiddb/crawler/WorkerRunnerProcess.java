@@ -1,7 +1,7 @@
-package cn.fudan.libdb.crawler;
+package cn.fudan.androiddb.crawler;
 
-import cn.fudan.libdb.crawler.crawlerEntity.CrawlerTaskInfo;
-import cn.fudan.libdb.crawler.dao.CrawlerTaskInfoDao;
+import cn.fudan.androiddb.crawler.crawlerEntity.CrawlerTaskInfo;
+import cn.fudan.androiddb.crawler.dao.CrawlerTaskInfoDao;
 
 import java.io.File;
 import java.util.ArrayList;

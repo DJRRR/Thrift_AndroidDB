@@ -1,6 +1,7 @@
-package cn.fudan.libdb.crawler;
+package cn.fudan.androiddb.crawler;
 
-import cn.fudan.libdb.crawler.crawlerEntity.BaiduCrawler;
+import cn.fudan.androiddb.crawler.crawlerEntity.*;
+import cn.fudan.androiddb.crawler.crawlerEntity.BaiduCrawler;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -43,24 +44,16 @@ public class CrawlerFactory {
 
         if (CRAWLER_BAIDU.equals(marketName))
             return new BaiduCrawler();
-//        else if (CRAWLER_QIHOO.equals(marketName))
-//            return new QihooCrawler();
-//        else if (CRAWLER_YINGYONGBAO.equals(marketName))
-//            return new YingyongbaoCrawler();
-//        else if (CRAWLER_HUAWEI.equals(marketName))
-//            return new HuaweiCrawler();
-//        else if (CRAWLER_GP.equals(marketName))
-//            return new GooglePlayCrawler();
-//        else if (CRAWLER_FDROID.equals(marketName))
-//            return new FDroidCrawler();
-//        else if (CRAWLER_XIAOMI.equals(marketName))
-//            return new MiCrawler();
-//        else if (CRAWLER_ANZHI.equals(marketName))
-//            return new AnzhiCrawler();//
-//        else if (CRAWLER_PP.equals(marketName))
-//            return new PPCrawler();
-//        else if (CRAWLER_WANDOUJIA.equals(marketName))
-//            return new WandoujiaCrawler();
+        else if (CRAWLER_QIHOO.equals(marketName))
+            return new QihooCrawler();
+        else if (CRAWLER_YINGYONGBAO.equals(marketName))
+            return new YingyongbaoCrawler();
+        else if (CRAWLER_HUAWEI.equals(marketName))
+            return new HuaweiCrawler();
+        else if (CRAWLER_XIAOMI.equals(marketName))
+            return new MiCrawler();
+        else if (CRAWLER_ANZHI.equals(marketName))
+            return new AnzhiCrawler();//
         else
             return null;
     }

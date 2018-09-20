@@ -4,7 +4,7 @@
  * DO NOT EDIT UNLESS YOU ARE SURE THAT YOU KNOW WHAT YOU ARE DOING
  *  @generated
  */
-package cn.fudan.libdb.crawler.util;
+package cn.fudan.androiddb.crawler.util;
 
 @SuppressWarnings({"cast", "rawtypes", "serial", "unchecked"})
 public class CrawlerServiceConstants {

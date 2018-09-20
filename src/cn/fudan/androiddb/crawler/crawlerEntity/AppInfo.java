@@ -1,4 +1,4 @@
-package cn.fudan.libdb.crawler.crawlerEntity;
+package cn.fudan.androiddb.crawler.crawlerEntity;
 
 /**
  * Created by qiaoying on 2017/8/10.

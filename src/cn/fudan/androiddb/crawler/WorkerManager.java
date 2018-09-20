@@ -1,10 +1,10 @@
-package cn.fudan.libdb.crawler;
+package cn.fudan.androiddb.crawler;
 
 
-import cn.fudan.libdb.crawler.crawlerEntity.CrawlerTaskInfo;
-import cn.fudan.libdb.crawler.dao.CrawlerTaskInfoDao;
-import cn.fudan.libdb.crawler.util.CrawlerServiceConstants;
-import cn.fudan.libdb.crawler.util.DateHelper;
+import cn.fudan.androiddb.crawler.crawlerEntity.CrawlerTaskInfo;
+import cn.fudan.androiddb.crawler.dao.CrawlerTaskInfoDao;
+import cn.fudan.androiddb.crawler.util.CrawlerServiceConstants;
+import cn.fudan.androiddb.crawler.util.DateHelper;
 
 import java.io.File;
 import java.io.IOException;

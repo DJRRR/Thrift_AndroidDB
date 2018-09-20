@@ -1,6 +1,7 @@
-package cn.fudan.libdb.crawler;
+package cn.fudan.androiddb.crawler;
 
-import cn.fudan.libdb.crawler.crawlerEntity.CrawlerTaskInfo;
+
+import cn.fudan.androiddb.crawler.crawlerEntity.CrawlerTaskInfo;
 
 /**
  * @author qiaoying

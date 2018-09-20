@@ -1,7 +1,8 @@
-package cn.fudan.libdb.crawler.crawlerEntity;
+package cn.fudan.androiddb.crawler.crawlerEntity;
 
-import cn.fudan.libdb.crawler.Crawler;
-import cn.fudan.libdb.crawler.dao.AppInfoDao;
+import cn.fudan.androiddb.crawler.Crawler;
+import cn.fudan.androiddb.crawler.crawlerEntity.CrawlerTaskInfo;
+import cn.fudan.androiddb.crawler.dao.AppInfoDao;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;

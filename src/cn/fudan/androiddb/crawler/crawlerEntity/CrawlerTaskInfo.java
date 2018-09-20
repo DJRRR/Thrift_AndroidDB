@@ -1,4 +1,4 @@
-package cn.fudan.libdb.crawler.crawlerEntity;
+package cn.fudan.androiddb.crawler.crawlerEntity;
 
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;

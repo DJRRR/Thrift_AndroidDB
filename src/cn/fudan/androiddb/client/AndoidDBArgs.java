@@ -53,6 +53,17 @@ public class AndoidDBArgs {
     @Parameter(names = {"--package", "-p"}, description = "Package Name of Apk")
     private String packageName;
 
+    @Parameter(names = {"--creator","-c"},description = "crawler creator")
+    private String creator;
+
+    @Parameter(names = {"--crawler"}, description = "crawler")
+    private boolean crawler = false;
+
+    @Parameter(names = {"--market","-m"},description = "market name")
+    private String market;
+
+    @Parameter(names = {"--scope","-s"},description = "top or all")
+    private String scope;
 
     public int getLimit() {
         return limit;
@@ -90,6 +101,18 @@ public class AndoidDBArgs {
         return packageName;
     }
 
+    public String getCreator(){
+        return creator;
+    }
+
+    public String getMarket(){
+        return market;
+    }
+
+    public String getScope(){
+        return scope;
+    }
+
     public boolean isJsonOutput(){
         return jsonOutput;
     }
@@ -104,6 +127,10 @@ public class AndoidDBArgs {
 
     public boolean isFetch() {
         return fetch;
+    }
+
+    public boolean isCrawler(){
+        return crawler;
     }
 
     public boolean versionUnset(){
@@ -137,6 +164,8 @@ public class AndoidDBArgs {
     public boolean packageNameUnset(){
         return packageName == null;
     }
+
+
 
     // TODO: 2018/9/17 to place all check funcs here
     public static boolean repoTypeCheck(AndoidDBArgs andoidDBArgs){
